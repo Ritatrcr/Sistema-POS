@@ -3,8 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, signInAnonymously } from "firebase/auth";
 import { auth } from "../../utils/FirebaseConfig";
 import { db } from "../../utils/FirebaseConfig"; // Asegúrate de que tienes esta configuración en tu archivo FirebaseConfig.ts
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-
+import { doc, setDoc } from "firebase/firestore";
 
 interface AuthContextProps {
   user: User | null;
@@ -33,19 +32,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (email: string, password: string) => {
-    // Registro del usuario con email y contraseña
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const firebaseUser = userCredential.user;
-  
-    // Guardar la información del usuario en Firestore
-    await setDoc(doc(db, "users", firebaseUser.uid), {
-      email: firebaseUser.email,
-      uid: firebaseUser.uid,
-      role: "user",  // Asume el rol "user" por defecto
-      createdAt: serverTimestamp(), // Establece la fecha de creación del usuario
-    });
+    try {
+      // Registro del usuario con email y contraseña
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
+
+      // Guardar la información del usuario en Firestore
+      console.log({
+        firebaseUser
+      })
+      await setDoc(doc(db, "users", firebaseUser.uid), {
+        email: email,
+        uid: firebaseUser.uid,
+        role: "user",  // Asume el rol "user" por defecto
+      });
+    } catch (error) {
+      console.log(error);
+
+    }
   };
-  
+
 
   const logout = async () => {
     await signOut(auth);
@@ -54,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout}}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
