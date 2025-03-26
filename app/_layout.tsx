@@ -5,12 +5,9 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <Stack>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="auth"/>
-          <Stack.Screen name="(app)"/>
-        </Stack>
+       <Stack.Screen name="auth"/>
+       <Stack.Screen name="(app)"/>
       </Stack>
-
-      </AuthProvider>
+    </AuthProvider>
   )
 }
