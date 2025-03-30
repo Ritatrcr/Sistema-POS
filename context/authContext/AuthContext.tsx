@@ -8,7 +8,7 @@ import { doc, setDoc } from "firebase/firestore";
 interface AuthContextProps {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -31,27 +31,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await signInWithEmailAndPassword(auth, email, password);
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, name: string) => {
     try {
       // Registro del usuario con email y contraseña
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
-
+  
       // Guardar la información del usuario en Firestore
-      console.log({
-        firebaseUser
-      })
       await setDoc(doc(db, "users", firebaseUser.uid), {
+        name: name,  // Guardar el nombre del usuario
         email: email,
         uid: firebaseUser.uid,
         role: "user",  // Asume el rol "user" por defecto
       });
     } catch (error) {
-      console.log(error);
-
+      console.error("Error al registrar usuario:", error);
     }
   };
-
+  
 
   const logout = async () => {
     await signOut(auth);
