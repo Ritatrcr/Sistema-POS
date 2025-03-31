@@ -57,12 +57,9 @@ const AuthScreen = () => {
         await register(email, password, name);
         Alert.alert("Éxito", "Usuario creado exitosamente.");
       }
-      router.push("/");
-    } catch (error) {
-      const errorCode = (error as any)?.code || "unknown";
-      const errorMsg = getErrorMessage(errorCode);
-      setErrorMessage({ email: errorMsg });
-      Alert.alert("Error", errorMsg);
+      router.push("./cliente/dashboardCliente");
+    } catch (error: any) {
+      Alert.alert("Error", getErrorMessage(error.code));
     }
   };
 
