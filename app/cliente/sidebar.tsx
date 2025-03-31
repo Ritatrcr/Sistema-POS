@@ -9,6 +9,12 @@ const Sidebar = () => {
 
   return (
     <View style={styles.sidebar}>
+
+      <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push("./dashboardCliente")}>
+        <MaterialIcons name="home" size={30} color="#fff" />
+        <Text style={styles.sidebarText}>Home</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push("./codigoQr")}>
         <MaterialIcons name="qr-code" size={30} color="#fff" />
         <Text style={styles.sidebarText}>Código QR</Text>
@@ -19,10 +25,7 @@ const Sidebar = () => {
         <Text style={styles.sidebarText}>Ayuda</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push("./dashboardCliente")}>
-        <MaterialIcons name="home" size={30} color="#fff" />
-        <Text style={styles.sidebarText}>Home</Text>
-      </TouchableOpacity>
+      
 
       <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push("./perfil")}>
         <MaterialIcons name="person" size={30} color="#fff" />
@@ -43,6 +46,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
+    paddingLeft: 30,
+    paddingRight: 30,
   },
   sidebarItem: {
     alignItems: "center",
