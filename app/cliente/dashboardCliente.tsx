@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Modal, TouchableHighlight } from "react-native";
-import { useProduct } from "../../context/productsContext/productsContext"; // Asegúrate de que la ruta sea correcta
+import { useProduct } from "../../context/productsContext/ProductsContext"; // Asegúrate de que la ruta sea correcta
 import Sidebar from "./sidebar";
 import { useAuth } from "../../context/authContext/AuthContext";
 

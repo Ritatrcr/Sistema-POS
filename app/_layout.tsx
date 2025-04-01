@@ -1,5 +1,5 @@
 import { AuthProvider } from "@/context/authContext/AuthContext";
-import { ProductProvider } from "@/context/productsContext/productsContext"; 
+import { ProductProvider } from "@/context/productsContext/ProductsContext"; 
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
