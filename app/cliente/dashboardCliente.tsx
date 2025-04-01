@@ -1,85 +1,97 @@
-// app/dashboardCliente.tsx
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Image
-} from "react-native";
-import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Modal, TouchableHighlight } from "react-native";
+import { useProduct } from "../../context/productsContext/productsContext"; // Asegúrate de que la ruta sea correcta
 import Sidebar from "./sidebar";
-import { db } from "../../utils/FirebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
 import { useAuth } from "../../context/authContext/AuthContext";
 
-const DashboardCliente = () => {
-  const router = useRouter();
-  const { userName } = useAuth(); // Obtenemos el nombre del usuario
-  const [search, setSearch] = useState("");
-  const [platos, setPlatos] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("Todas");
+// Tipos para los productos
+interface Product {
+  id: string;
+  nombre: string;
+  ingredientes: string;
+  tiempoPreparacion: string;
+  calificaciones: number[];
+  categoria: string;
+  descripcion: string;
+  pasos: string[];
+  imageUrl: string; // Asegúrate de tener esta propiedad en tus datos
+}
 
-  // Categorías que deseas mostrar
-  const categories = ["Todas", "Platos Fuertes", "Bebidas", "Postres", "Entradas", "Ensaladas"];
+const { userName } = useAuth(); // Obtenemos el nombre del usuario
 
-  // Mapeo de imágenes locales. Agrega todas las imágenes que uses.
-  const localPlatoImages: { [key: string]: any } = {
-    "plato1.png": require("../../assets/images/platos/plato1.png"),
-    "plato2.png": require("../../assets/images/platos/plato2.png"),
- 
-    // Agrega más imágenes según las necesites.
-  };
+const HomeScreen: React.FC = () => {
+  const { products, fetchAllProducts } = useProduct();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("Todas");
+  const [loading, setLoading] = useState<boolean>(true); // Estado para controlar el loader
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // Estado para mostrar el modal
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null); // Producto seleccionado
 
-  // Función para obtener la fuente de la imagen (local o remota)
-  const getImageSource = (imageKey: string) => {
-    if (localPlatoImages[imageKey]) {
-      return localPlatoImages[imageKey];
-    }
-    // Si no se encuentra en el objeto, se asume que es una URL remota.
-    return { uri: imageKey };
-  };
-
-  // Obtener todos los platos de la colección "platos" de Firestore
+  // Filtrado de productos por nombre
   useEffect(() => {
-    const fetchPlatos = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "platos"));
-        const platosData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setPlatos(platosData);
-      } catch (error) {
-        console.error("Error fetching platos:", error);
-      }
+    const loadProducts = async () => {
+      await fetchAllProducts(); // Asumimos que esto es asincrónico
+      setLoading(false); // Cambiar el estado de loading a false cuando los productos se han cargado
     };
+    loadProducts();
+  }, [fetchAllProducts]);
 
-    fetchPlatos();
-  }, []);
+  useEffect(() => {
+    if (searchQuery === "") {
+      setFilteredProducts(products);
+    } else {
+      const filtered = products.filter((product: { nombre: string; }) =>
+        product.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    }
+  }, [searchQuery, products]);
 
-  // Filtrar platos según la categoría seleccionada y el texto de búsqueda
-  const filteredPlatos = platos.filter((plato) => {
-    const categoryMatch = selectedCategory === "Todas" || plato.type === selectedCategory;
-    const searchMatch =
-      plato.name.toLowerCase().includes(search.toLowerCase()) ||
-      plato.description.toLowerCase().includes(search.toLowerCase());
-    return categoryMatch && searchMatch;
-  });
+  // Categorías de los productos
+  const categories = ["Todas", "Entradas", "Platos Fuertes", "Bebidas", "Postres", "Favoritos"];
+
+  // Función para renderizar cada producto
+  const renderItem = ({ item }: { item: Product }) => {
+    // Calificación del producto (mostramos el número y las estrellas)
+    const rating = item.calificaciones.length > 0 ? item.calificaciones[0] : 0;
+    const stars = Array.from({ length: 5 }, (_, index) => index < rating ? "★" : "☆").join(" ");
+
+    return (
+      <TouchableOpacity onPress={() => { setSelectedProduct(item); setModalVisible(true); }} style={styles.card}>
+        <Image source={{ uri: item.imageUrl }} style={styles.foodImage} />
+        <View style={styles.cardInfo}>
+          <Text style={styles.itemName}>{item.nombre}</Text>
+          <Text style={styles.itemDetails}>
+            {item.tiempoPreparacion} mins - {item.categoria}
+          </Text>
+          <View style={styles.itemRating}>
+            <Text style={styles.ratingText}>
+              {stars} ({rating}) {/* Muestra las estrellas y el número de la calificación */}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  // Función para cerrar el modal
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedProduct(null); // Limpiar el producto seleccionado cuando se cierre el modal
+  };
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.mainContent}>
         <View style={styles.header}>
-          <Text style={styles.greeting}>Hello {userName || "Guest"}</Text>
+          <Text style={styles.greeting}>Hola, {userName || "Invitado"}</Text>
           <Text style={styles.question}>¿De qué tienes antojos hoy?</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="Escribe para buscar"
-            value={search}
-            onChangeText={setSearch}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
           />
         </View>
 
@@ -101,60 +113,64 @@ const DashboardCliente = () => {
 
         {/* Sección de platos */}
         <View style={styles.foodSection}>
+          {/* Mostrar "Todos los Platos" o la categoría seleccionada */}
           <Text style={styles.sectionTitle}>
             {selectedCategory === "Todas" ? "Todos los Platos" : selectedCategory}
           </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {filteredPlatos.map((item) => (
-              <View key={item.id} style={styles.card}>
-                <Image
-                  source={getImageSource(item.image)}
-                  style={styles.foodImage}
-                />
-                <View style={styles.cardInfo}>
-                  <Text style={styles.itemName}>{item.name}</Text>
-                  <Text style={styles.itemDetails}>
-                    {item.time} mins - {item.type}
-                  </Text>
-                  <Text style={styles.itemRating}>{item.rating} ⭐</Text>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
+
+          {/* Mostrar loader mientras se cargan los productos */}
+          {loading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" color="#ff8403" />
+            </View>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {filteredProducts
+                .filter((item) => selectedCategory === "Todas" || item.categoria === selectedCategory)
+                .map((item) => renderItem({ item }))}
+            </ScrollView>
+          )}
         </View>
 
         {/* Sección de Recomendados */}
         <View style={styles.foodSection}>
           <Text style={styles.sectionTitle}>Recomendados</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {filteredPlatos
-              .filter((plato) => plato.rating >= 4.5)
-              .map((item) => (
-                <View key={item.id} style={styles.card}>
-                  <Image
-                    source={getImageSource(item.image)}
-                    style={styles.foodImage}
-                  />
-                  <View style={styles.cardInfo}>
-                    <Text style={styles.itemName}>{item.name}</Text>
-                    <Text style={styles.itemDetails}>
-                      {item.description} - {item.time} mins
-                    </Text>
-                    <Text style={styles.itemRating}>{item.rating} ⭐</Text>
-                  </View>
-                </View>
-              ))}
+            {filteredProducts
+              .filter((plato) => plato.calificaciones.length > 0 && plato.calificaciones[0] >= 4.5)
+              .map((item) => renderItem({ item }))}
           </ScrollView>
         </View>
       </ScrollView>
-
-      {/* Sidebar al final */}
       <Sidebar />
+
+      {/* Modal para mostrar los detalles del producto */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          {selectedProduct && (
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>{selectedProduct.nombre}</Text>
+              <Text style={styles.modalDescription}>{selectedProduct.descripcion}</Text>
+              <Text style={styles.modalIngredients}>Ingredientes: {selectedProduct.ingredientes}</Text>
+              <Text style={styles.modalSteps}>Pasos: {selectedProduct.pasos.join(", ")}</Text>
+              <TouchableHighlight
+                style={styles.closeButton}
+                onPress={closeModal}
+              >
+                <Text style={styles.closeButtonText}>X</Text>
+              </TouchableHighlight>
+            </View>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 };
-
-export default DashboardCliente;
 
 const styles = StyleSheet.create({
   container: {
@@ -233,8 +249,58 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   itemRating: {
-    fontSize: 14,
-    color: "#FBB03B",
+    flexDirection: "row", // Para mostrar las estrellas en línea
     marginTop: 5,
   },
+  ratingText: {
+    fontSize: 14,
+    color: "#FBB03B",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 200,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fondo oscuro
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: 300,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  modalDescription: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  modalIngredients: {
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  modalSteps: {
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: "#ff8403",
+    padding: 10,
+    borderRadius: 20,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    textAlign: "center",
+  },
 });
+
+export default HomeScreen;
