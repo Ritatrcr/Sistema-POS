@@ -13,7 +13,7 @@ import { useAuth } from "../../context/authContext/AuthContext";
 
 const AuthScreen = () => {
   const router = useRouter();
-  const { login, register } = useAuth();
+  const { login, register, userRole } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -57,7 +57,16 @@ const AuthScreen = () => {
         await register(email, password, name);
         Alert.alert("Éxito", "Usuario creado exitosamente.");
       }
-      router.push("./cliente/dashboardCliente");
+
+      // Redirigir según el rol del usuario
+      if (userRole === "admin") {
+        router.push("/caja/platos");
+      } else if (userRole === "user") {
+        router.push("./cliente/dashboardCliente");
+      } else {
+        // Si no tiene un rol válido, redirigir a una página por defecto o mostrar un error
+        Alert.alert("Error", "Rol de usuario no reconocido.");
+      }
     } catch (error: any) {
       Alert.alert("Error", getErrorMessage(error.code));
     }

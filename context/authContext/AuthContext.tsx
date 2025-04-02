@@ -8,7 +8,8 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 interface AuthContextProps {
   user: User | null;
   userName: string | null;
-  userEmail: string | null;  // Almacenar el correo del usuario
+  userEmail: string | null;
+  userRole: string | null;   // Almacenar el rol del usuario
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -20,18 +21,20 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userName, setUserName] = useState<string | null>(null); // Almacenar el nombre del usuario
-  const [userEmail, setUserEmail] = useState<string | null>(null); // Almacenar el correo del usuario
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        // Obtener el nombre y correo del usuario desde Firestore
+        // Obtener el nombre, correo y rol del usuario desde Firestore
         const userDoc = await getDoc(doc(db, "users", currentUser.uid));
         if (userDoc.exists()) {
           setUserName(userDoc.data()?.name || null);
-          setUserEmail(currentUser.email || null); // Obtener el correo del usuario directamente desde Firebase Auth
+          setUserEmail(currentUser.email || null);
+          setUserRole(userDoc.data()?.role || "user"); // Obtener el rol del usuario
         }
       }
     });
@@ -49,29 +52,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const firebaseUser = userCredential.user;
 
       // Guardar la información del usuario en Firestore
-      console.log({
-        firebaseUser
-      })
       await setDoc(doc(db, "users", firebaseUser.uid), {
         name: name,  // Guardar el nombre del usuario
         email: email,
         uid: firebaseUser.uid,
-        role: "user",  // Asume el rol "user" por defecto
+        role: "user",  // Asigna el rol "user" al registrarse
       });
-      setUserName(name); // Establecer el nombre después del registro
+      setUserName(name);  // Establecer el nombre después del registro
       setUserEmail(email); // Establecer el correo después del registro
+      setUserRole("user"); // Asignar el rol "user" después del registro
     } catch (error) {
       console.error("Error al registrar usuario:", error);
     }
   };
-
 
   const logout = async () => {
     await signOut(auth);
   };
 
   return (
-    <AuthContext.Provider value={{ user, userName, userEmail, login, register, logout }}>
+    <AuthContext.Provider value={{ user, userName, userEmail, userRole, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
