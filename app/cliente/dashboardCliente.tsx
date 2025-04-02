@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Modal, TouchableHighlight } from "react-native";
 import { useProduct } from "../../context/productsContext/ProductsContext"; // Asegúrate de que la ruta sea correcta
@@ -26,7 +27,7 @@ const HomeScreen: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Todas");
   const [loading, setLoading] = useState<boolean>(true); // Estado para controlar el loader
   const [modalVisible, setModalVisible] = useState<boolean>(false); // Estado para mostrar el modal
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null); // Producto seleccionado
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null); // Producto seleccionado 
 
   // Filtrado de productos por nombre
   useEffect(() => {
