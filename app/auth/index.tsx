@@ -1,3 +1,4 @@
+// AuthScreen.tsx
 import React, { useState } from "react";
 import { 
   View, 
@@ -10,6 +11,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/authContext/AuthContext";
+import { MaterialIcons } from "@expo/vector-icons"; // Para usar un ícono de visibilidad
 
 const AuthScreen = () => {
   const router = useRouter();
@@ -20,6 +22,7 @@ const AuthScreen = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [focusedInput, setFocusedInput] = useState(null);
   const [errorMessage, setErrorMessage] = useState<{ email?: string, password?: string, name?: string }>({});
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -129,19 +132,24 @@ const AuthScreen = () => {
       />
       {errorMessage.email && <Text style={styles.errorText}>{errorMessage.email}</Text>}
 
-      <TextInput
-        style={[
-          styles.input,
-          focusedInput === "password" && styles.inputFocused,
-          errorMessage.password && styles.inputError
-        ]}
-        placeholder="Contraseña"
-        placeholderTextColor="#A1A1A1"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-        onBlur={() => setFocusedInput(null)}
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={[
+            styles.input,
+            focusedInput === "password" && styles.inputFocused,
+            errorMessage.password && styles.inputError
+          ]}
+          placeholder="Contraseña"
+          placeholderTextColor="#A1A1A1"
+          secureTextEntry={!showPassword}  // Condicional para mostrar/ocultar la contraseña
+          value={password}
+          onChangeText={setPassword}
+          onBlur={() => setFocusedInput(null)}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+          <MaterialIcons name={showPassword ? "visibility-off" : "visibility"} size={24} color="#A1A1A1" />
+        </TouchableOpacity>
+      </View>
       {errorMessage.password && <Text style={styles.errorText}>{errorMessage.password}</Text>}
 
       <TouchableOpacity style={styles.mainButton} onPress={handleAuth}>
@@ -211,6 +219,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     alignSelf: "flex-start",
     marginBottom: 10,
+  },
+  passwordContainer: {
+    position: "relative",
+    width: "100%",
+  },
+  eyeIcon: {
+    position: "absolute",
+    right: 16,
+    top: 16,
   },
   mainButton: {
     backgroundColor: "#FBB03B",
