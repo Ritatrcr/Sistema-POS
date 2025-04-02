@@ -19,29 +19,25 @@ interface Product {
 // Crear el contexto
 const ProductContext = createContext<any>(null);
 
-const uploadImage = async (image: File | string, productId: string): Promise<string> => {
+const uploadImage = async (uri: string, id: string) => {
+  const storage = getStorage();
+  const storageRef = ref(storage, "posts/" + Date.now()+id + ".jpg");
   try {
-    let blob;
-
-    if (Platform.OS === "web") {
-      if (!(image instanceof File)) throw new Error("La imagen no es un File válido");
-      blob = image;
-    } else {
-      if (typeof image !== "string") throw new Error("En móvil, la imagen debe ser una URI string.");
-      const response = await fetch(image);
-      blob = await response.blob();
-    }
-
-    const storageRef = ref(storage, `productos/${productId}.jpg`);
-    await uploadBytes(storageRef, blob);
-    const downloadURL = await getDownloadURL(storageRef);
-    return downloadURL;
+    console.log("URI: ", uri);
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const snapshot = await uploadBytes(storageRef, blob);
+    const url = await getDownloadURL(storageRef);
+    console.log("Uploaded a raw string!");
+    console.log({
+      snapshot,
+    });
+    return url ?? "";
   } catch (error) {
-    console.error("Error al subir la imagen: ", error);
-    throw new Error("Error al subir la imagen");
+    console.log(error);
   }
+  return "";
 };
-
 
 // Proveedor del contexto
 export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
