@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { db } from "../../utils/FirebaseConfig"; // Asegúrate de tener configurado firebase.js correctamente
+import { db, storage } from "../../utils/FirebaseConfig"; 
 import { collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, DocumentData } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Platform } from "react-native";
 
 // Define los tipos para el producto
 interface Product {
@@ -11,20 +13,47 @@ interface Product {
   categoria: string;
   descripcion: string;
   pasos: string[];
+  imageUrl?: string; // Agregar propiedad para la URL de la imagen
 }
 
 // Crear el contexto
 const ProductContext = createContext<any>(null);
+
+const uploadImage = async (image: File | string, productId: string): Promise<string> => {
+  try {
+    let blob;
+
+    if (Platform.OS === "web") {
+      if (!(image instanceof File)) throw new Error("La imagen no es un File válido");
+      blob = image;
+    } else {
+      if (typeof image !== "string") throw new Error("En móvil, la imagen debe ser una URI string.");
+      const response = await fetch(image);
+      blob = await response.blob();
+    }
+
+    const storageRef = ref(storage, `productos/${productId}.jpg`);
+    await uploadBytes(storageRef, blob);
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  } catch (error) {
+    console.error("Error al subir la imagen: ", error);
+    throw new Error("Error al subir la imagen");
+  }
+};
+
 
 // Proveedor del contexto
 export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [products, setProducts] = useState<Product[]>([]);
 
   // Crear un nuevo producto
-  const createProduct = async (productData: Product) => {
+  const createProduct = async (productData: Product, imageUri: string) => {
     try {
       const productRef = doc(collection(db, "productos"));
-      await setDoc(productRef, productData);
+      const imageUrl = await uploadImage(imageUri, productRef.id); // Subir la imagen y obtener la URL
+      const newProduct = { ...productData, imageUrl }; // Agregar la URL de la imagen al producto
+      await setDoc(productRef, newProduct); // Guardar el producto con la URL de la imagen
       console.log("Producto creado exitosamente");
     } catch (error) {
       console.error("Error al crear el producto: ", error);
@@ -62,8 +91,12 @@ export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ childre
   };
 
   // Editar un producto completo
-  const updateProduct = async (id: string, updatedProduct: Product) => {
+  const updateProduct = async (id: string, updatedProduct: Product, imageUri?: string) => {
     try {
+      if (imageUri) {
+        const imageUrl = await uploadImage(imageUri, id); // Subir nueva imagen y obtener URL
+        updatedProduct = { ...updatedProduct, imageUrl }; // Agregar la URL de la imagen al producto
+      }
       const docRef = doc(db, "productos", id);
       await updateDoc(docRef, { ...updatedProduct });
       console.log("Producto actualizado exitosamente");
