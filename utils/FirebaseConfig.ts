@@ -11,7 +11,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyAfTXlmYHaN_4moTJNyRGeeEjd6XlhRZhc",
   authDomain: "sistema-pos-69026.firebaseapp.com",
   projectId: "sistema-pos-69026",
-  storageBucket: "sistema-pos-69026.appspot.com",
+  storageBucket: "sistema-pos-69026.firebasestorage.app",
   messagingSenderId: "706222144600",
   appId: "1:706222144600:web:2651c56b3af0c29b5e9e2d",
   measurementId: "G-8LQMSF0774"

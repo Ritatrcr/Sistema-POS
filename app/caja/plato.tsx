@@ -38,8 +38,6 @@ export default function CrearNuevoProducto() {
     };
 
     if (image) {
-      console.log("Image URI:", image); // Para depuración
-      console.log("Product:", productData); // Para depuración
       createProduct(productData, image); // Llamar al método para crear el producto, pasando la imagen
     } else {
       // Si no se ha seleccionado imagen, aún crear el producto sin la URL de la imagen

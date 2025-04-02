@@ -2,7 +2,6 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { db, storage } from "../../utils/FirebaseConfig"; 
 import { collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, DocumentData } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { Platform } from "react-native";
 
 // Define los tipos para el producto
 interface Product {
@@ -19,25 +18,46 @@ interface Product {
 // Crear el contexto
 const ProductContext = createContext<any>(null);
 
-const uploadImage = async (uri: string, id: string) => {
+const uploadImage = async (uri: string) => {
+
+  console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n Subiendo imagen...");
   const storage = getStorage();
-  const storageRef = ref(storage, "posts/" + Date.now()+id + ".jpg");
+  const storageRef = ref(storage, "posts/" + Date.now());
+
   try {
-    console.log("URI: ", uri);
+    console.log("URI de la imagen: ", uri);
+    // Verifica si la URI es válida
+    if (!uri.startsWith('file://')) {
+      console.error("La URI no es válida: ", uri);
+      return "";
+    }
+
     const response = await fetch(uri);
     const blob = await response.blob();
+
+    console.log("Blob Type: ", blob.type); // Asegúrate de que es una imagen
+
+    // Carga la imagen
     const snapshot = await uploadBytes(storageRef, blob);
     const url = await getDownloadURL(storageRef);
-    console.log("Uploaded a raw string!");
-    console.log({
-      snapshot,
-    });
+
+    console.log("Imagen subida exitosamente!");
     return url ?? "";
   } catch (error) {
-    console.log(error);
+    if (error instanceof Error) {
+      console.error("Error al subir la imagen:", error.message);
+    } else {
+      console.error("Error al subir la imagen:", error);
+    }
+    if (error instanceof Error) {
+      console.error("Pila de errores: ", error.stack);
+    } else {
+      console.error("Error desconocido: ", error);
+    }
+    return "";
   }
-  return "";
 };
+
 
 // Proveedor del contexto
 export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
@@ -45,9 +65,16 @@ export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ childre
 
   // Crear un nuevo producto
   const createProduct = async (productData: Product, imageUri: string) => {
+    console.log("Creando producto...");
+      console.log("Datos del producto:", productData);
+      console.log("URI de la imagen:", imageUri);
     try {
+      console.log("Creando producto...");
+      console.log("Datos del producto:", productData);
+      console.log("URI de la imagen:", imageUri);
       const productRef = doc(collection(db, "productos"));
-      const imageUrl = await uploadImage(imageUri, productRef.id); // Subir la imagen y obtener la URL
+
+      const imageUrl = await uploadImage(imageUri); // Subir la imagen y obtener la URL
       const newProduct = { ...productData, imageUrl }; // Agregar la URL de la imagen al producto
       await setDoc(productRef, newProduct); // Guardar el producto con la URL de la imagen
       console.log("Producto creado exitosamente");
@@ -90,7 +117,7 @@ export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ childre
   const updateProduct = async (id: string, updatedProduct: Product, imageUri?: string) => {
     try {
       if (imageUri) {
-        const imageUrl = await uploadImage(imageUri, id); // Subir nueva imagen y obtener URL
+        const imageUrl = await uploadImage(imageUri); // Subir nueva imagen y obtener URL
         updatedProduct = { ...updatedProduct, imageUrl }; // Agregar la URL de la imagen al producto
       }
       const docRef = doc(db, "productos", id);
