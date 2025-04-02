@@ -1,4 +1,3 @@
-// components/cameramodal.tsx
 import React from 'react';
 import { Modal, View, TouchableOpacity, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,9 +12,11 @@ export default function CameraModal({ isVisible, setIsVisible, setImage }: any) 
         aspect: [4, 3],
         quality: 1,
       });
-      //if (!result.cancelled) {
-        //setImage(result.uri); // Set the selected image
-      //}
+      if (!result.canceled) {
+        if (result.assets && result.assets.length > 0) {
+          setImage(result.assets[0].uri); // Set the selected image
+        }
+      }
     }
   };
 

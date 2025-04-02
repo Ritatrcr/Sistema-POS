@@ -60,7 +60,7 @@ const AuthScreen = () => {
 
       // Redirigir según el rol del usuario
       if (userRole === "admin") {
-        router.push("/caja/platos");
+        router.push("/caja/plato");
       } else if (userRole === "user") {
         router.push("./cliente/dashboardCliente");
       } else {
