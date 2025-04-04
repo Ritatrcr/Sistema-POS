@@ -21,20 +21,27 @@ const ProductContext = createContext<any>(null);
 
 const uploadImage = async (uri: string, id: string) => {
   const storage = getStorage();
-  const storageRef = ref(storage, "posts/" + Date.now()+id + ".jpg");
+  const storageRef = ref(storage, "posts/" + Date.now() + id + ".jpg");
+  
   try {
-    console.log("URI: ", uri);
+    console.log("URI de la imagen:", uri);
+    
+    // Convertir el URI de la imagen en un blob
     const response = await fetch(uri);
     const blob = await response.blob();
+    console.log("Blob creado exitosamente:", blob);
+    
+    // Subir el blob a Firebase Storage
     const snapshot = await uploadBytes(storageRef, blob);
+    console.log("Imagen subida exitosamente:", snapshot);
+    
+    // Obtener la URL de descarga de la imagen
     const url = await getDownloadURL(storageRef);
-    console.log("Uploaded a raw string!");
-    console.log({
-      snapshot,
-    });
-    return url ?? "";
+    console.log("URL de la imagen subida:", url);
+    
+    return url ?? ""; // Devolver la URL de la imagen
   } catch (error) {
-    console.log(error);
+    console.error("Error al subir la imagen:", error);
   }
   return "";
 };

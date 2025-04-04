@@ -36,18 +36,18 @@ export default function CrearNuevoProducto() {
       calificaciones: [],  // Si no hay calificaciones, inicializar como arreglo vacío
       pasos: procedimiento.split("\n") || [], // Convertir los pasos a un array (si está vacío, dejarlo como un arreglo vacío)
     };
-
+  
     if (image) {
-      console.log("Image URI:", image); // Para depuración
-      console.log("Product:", productData); // Para depuración
+      console.log("URI de la imagen seleccionada:", image); // Verificar la imagen seleccionada
       createProduct(productData, image); // Llamar al método para crear el producto, pasando la imagen
     } else {
-      // Si no se ha seleccionado imagen, aún crear el producto sin la URL de la imagen
+      console.log("No se ha seleccionado una imagen"); // Si no hay imagen seleccionada
       createProduct(productData, ""); // Pasar una cadena vacía si no hay imagen
     }
-
+  
     console.log("Producto guardado:", productData); // Para depuración
   };
+  
 
   return (
     <View style={styles.container}>

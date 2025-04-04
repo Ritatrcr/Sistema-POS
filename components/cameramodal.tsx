@@ -14,8 +14,7 @@ export default function CameraModal({ isVisible, setIsVisible, setImage }: any) 
       });
       if (!result.canceled) {
         if (result.assets && result.assets.length > 0) {
-          console.log("RESULTADO",result); // Log the selected image URI
-          setImage(result.assets[0].uri); // Set the selected image URI
+          setImage(result.assets[0].uri); // Set the selected image
         }
       }
     }
