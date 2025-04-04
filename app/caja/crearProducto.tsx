@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image 
 import Entypo from '@expo/vector-icons/Entypo';
 import CameraModal from '../../components/cameramodal'; // Asegúrate de importar el componente modal
 import { useProduct } from '../../context/productsContext/ProductsContext'; // Importa el contexto
+import Sidebar from './sidebar';
 
 export default function CrearNuevoProducto() {
   const [nombre, setNombre] = useState('');
@@ -17,8 +18,6 @@ export default function CrearNuevoProducto() {
   const [selectedTime, setSelectedTime] = useState(''); // Para controlar el tiempo de preparación seleccionado
   const { createProduct } = useProduct(); // Usamos el contexto para crear el producto
 
-
-  
   const handleImageSelect = (uri: string) => {
     setImage(uri); // Guardar la imagen seleccionada
     setIsModalVisible(false); // Cerrar el modal
@@ -33,10 +32,10 @@ export default function CrearNuevoProducto() {
       tiempoPreparacion: tiempoPreparacion || "sin información",
       ingredientes: ingredientes || "sin información",
       procedimiento: procedimiento || "sin información",
-      calificaciones: [],  // Si no hay calificaciones, inicializar como arreglo vacío
-      pasos: procedimiento.split("\n") || [], // Convertir los pasos a un array (si está vacío, dejarlo como un arreglo vacío)
+      calificaciones: [], 
+      pasos: procedimiento.split("\n") || [], 
     };
-  
+
     if (image) {
       console.log("URI de la imagen seleccionada:", image); // Verificar la imagen seleccionada
       createProduct(productData, image); // Llamar al método para crear el producto, pasando la imagen
@@ -44,22 +43,30 @@ export default function CrearNuevoProducto() {
       console.log("No se ha seleccionado una imagen"); // Si no hay imagen seleccionada
       createProduct(productData, ""); // Pasar una cadena vacía si no hay imagen
     }
-  
+
     console.log("Producto guardado:", productData); // Para depuración
   };
-  
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.mainContent}>
         <Text style={styles.title}>Crea un nuevo producto</Text>
 
-        <TouchableOpacity style={styles.imageButton} onPress={() => setIsModalVisible(true)}>
-          <Entypo name="camera" size={24} color="black" />
-          <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
+        <TouchableOpacity
+          style={styles.imageButton}
+          onPress={() => setIsModalVisible(true)}
+          disabled={!!image} // Deshabilitar el botón si ya hay una imagen seleccionada
+        >
+          {image ? (
+            // Si ya hay imagen seleccionada, mostrar la imagen en lugar del botón
+            <Image source={{ uri: image }} style={styles.imagePreview} />
+          ) : (
+            <>
+              <Entypo name="camera" size={24} color="black" />
+              <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
+            </>
+          )}
         </TouchableOpacity>
-
-        {image && <Image source={{ uri: image }} style={styles.imagePreview} />}
 
         <TextInput style={styles.input} placeholder="Nombre del Producto" value={nombre} onChangeText={setNombre} />
         <View style={styles.categoryContainer}>
@@ -100,25 +107,26 @@ export default function CrearNuevoProducto() {
       </ScrollView>
 
       <CameraModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} setImage={handleImageSelect} />
+      <Sidebar />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff' },
   mainContent: { flex: 1 },
-  title: { fontSize: 28, fontWeight: '600', color: '#333', marginBottom: 20 },
-  imageButton: { backgroundColor: '#F0F0F0', padding: 15, borderRadius: 12, alignItems: 'center', marginBottom: 20 },
+  title: { textAlign:'center',marginTop:50,paddingLeft: 20, paddingTop: 20, fontSize: 28, fontWeight: '600', color: '#333', marginBottom: 20 },
+  imageButton: { marginLeft: 'auto', marginRight: 'auto', width: 200, height: 200, backgroundColor: '#FBB03B', padding: 5, borderRadius: 150, alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
   imageButtonText: { marginTop: 10, fontSize: 16, color: '#333' },
-  imagePreview: { width: 100, height: 100, marginBottom: 20, borderRadius: 50 },
-  input: { backgroundColor: '#F0F0F0', borderRadius: 12, padding: 10, fontSize: 16, marginBottom: 15 },
-  categoryContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
+  imagePreview: { width: '100%', height: '100%', borderRadius: 150, resizeMode: 'cover' },
+  input: {  marginLeft:20,marginRight:20,backgroundColor: '#F0F0F0', borderRadius: 12, padding: 10, fontSize: 16, marginBottom: 15 ,textAlignVertical: 'center'},
+  categoryContainer: {  paddingLeft:20,paddingRight:20,flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
   categoryButton: { backgroundColor: '#F0F0F0', padding: 12, borderRadius: 12, width: '22%', alignItems: 'center' },
   categoryText: { fontSize: 14, color: '#333' },
   selectedButton: { backgroundColor: '#FBB03B' },
-  timeContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  timeButton: { backgroundColor: '#F0F0F0', padding: 12, borderRadius: 12, width: '22%', alignItems: 'center' },
+  timeContainer: {  paddingLeft:20,paddingRight:20,flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  timeButton: { backgroundColor: '#F0F0F0', padding: 12, borderRadius: 12, width: '15%', alignItems: 'center' },
   timeText: { fontSize: 14, color: '#333' },
-  saveButton: { backgroundColor: '#FBB03B', padding: 15, borderRadius: 12, alignItems: 'center', marginTop: 20 },
+  saveButton: { marginLeft:20,marginRight:20,backgroundColor: '#FBB03B', padding: 15, borderRadius: 12, alignItems: 'center', marginTop: 20 },
   saveButtonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
 });

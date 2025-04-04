@@ -60,13 +60,10 @@ const AuthScreen = () => {
 
       // Redirigir según el rol del usuario
       if (userRole === "admin") {
-        router.push("/caja/plato");
+        router.push("/caja/crearProducto");
       } else if (userRole === "user") {
         router.push("./cliente/dashboardCliente");
-      } else {
-        // Si no tiene un rol válido, redirigir a una página por defecto o mostrar un error
-        Alert.alert("Error", "Rol de usuario no reconocido.");
-      }
+      } 
     } catch (error: any) {
       Alert.alert("Error", getErrorMessage(error.code));
     }

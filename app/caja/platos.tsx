@@ -21,15 +21,7 @@ export default function AgregarProducto() {
         <TextInput style={styles.input} placeholder="Precio" keyboardType="numeric" />
         <TextInput style={styles.input} placeholder="Descripción" multiline />
 
-        {/* Edit Button */}
-        <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.editButtonText}>Editar</Text>
-        </TouchableOpacity>
-
-        {/* Delete Button */}
-        <TouchableOpacity style={styles.deleteButton}>
-          <Text style={styles.deleteButtonText}>Eliminar</Text>
-        </TouchableOpacity>
+        
 
         {/* Save Button */}
         <TouchableOpacity style={styles.saveButton}>
