@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Modal, TouchableHighlight } from "react-native";
 import { useProduct } from "../../context/productsContext/ProductsContext"; // Asegúrate de que la ruta sea correcta
@@ -14,7 +13,6 @@ interface Product {
   calificaciones: number[];
   categoria: string;
   descripcion: string;
-  pasos: string[];
   imageUrl: string; // Asegúrate de tener esta propiedad en tus datos
 }
 
@@ -28,6 +26,7 @@ const HomeScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true); // Estado para controlar el loader
   const [modalVisible, setModalVisible] = useState<boolean>(false); // Estado para mostrar el modal
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null); // Producto seleccionado 
+  
 
   // Filtrado de productos por nombre
   useEffect(() => {
@@ -61,15 +60,18 @@ const HomeScreen: React.FC = () => {
     return (
       <TouchableOpacity onPress={() => { setSelectedProduct(item); setModalVisible(true); }} style={styles.card}>
         <Image source={{ uri: item.imageUrl }} style={styles.foodImage} />
+        
         <View style={styles.cardInfo}>
           <Text style={styles.itemName}>{item.nombre}</Text>
           <Text style={styles.itemDetails}>
             {item.tiempoPreparacion} mins - {item.categoria}
           </Text>
           <View style={styles.itemRating}>
-            <Text style={styles.ratingText}>
-              {stars} ({rating}) {/* Muestra las estrellas y el número de la calificación */}
-            </Text>
+            {item.calificaciones.length > 0 && (
+              <Text style={styles.ratingText}>
+                {stars} ({rating})
+              </Text>
+            )}
           </View>
         </View>
       </TouchableOpacity>
@@ -114,7 +116,6 @@ const HomeScreen: React.FC = () => {
 
         {/* Sección de platos */}
         <View style={styles.foodSection}>
-          {/* Mostrar "Todos los Platos" o la categoría seleccionada */}
           <Text style={styles.sectionTitle}>
             {selectedCategory === "Todas" ? "Todos los Platos" : selectedCategory}
           </Text>
@@ -155,16 +156,21 @@ const HomeScreen: React.FC = () => {
         <View style={styles.modalContainer}>
           {selectedProduct && (
             <View style={styles.modalContent}>
+              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                <Text style={styles.closeButtonText}>X</Text>
+              </TouchableOpacity>
+              <Image source={{ uri: selectedProduct.imageUrl }} style={styles.modalImage} />
               <Text style={styles.modalTitle}>{selectedProduct.nombre}</Text>
               <Text style={styles.modalDescription}>{selectedProduct.descripcion}</Text>
               <Text style={styles.modalIngredients}>Ingredientes: {selectedProduct.ingredientes}</Text>
-              <Text style={styles.modalSteps}>Pasos: {selectedProduct.pasos.join(", ")}</Text>
-              <TouchableHighlight
-                style={styles.closeButton}
-                onPress={closeModal}
-              >
-                <Text style={styles.closeButtonText}>X</Text>
-              </TouchableHighlight>
+              <View style={styles.modalFooter}>
+                {/* <TouchableOpacity style={styles.addToCartButton}>
+                  <Text style={styles.addToCartText}>🛒</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.favoriteButton}>
+                  <Text style={styles.favoriteText}>❤️</Text>
+                </TouchableOpacity> */}
+              </View>
             </View>
           )}
         </View>
@@ -231,10 +237,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#F8F8F8",
     overflow: "hidden",
+    position: "relative",
   },
   foodImage: {
     width: "100%",
     height: 100,
+  },
+  favoriteIcon: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    zIndex: 1,
   },
   cardInfo: {
     padding: 10,
@@ -274,6 +287,13 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: 300,
+    position: "relative",
+  },
+  modalImage: {
+    width: "100%",
+    height: 150,
+    borderRadius: 10,
+    marginBottom: 10,
   },
   modalTitle: {
     fontSize: 20,
@@ -288,19 +308,42 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 10,
   },
-  modalSteps: {
-    fontSize: 14,
-    marginBottom: 20,
+  modalFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  closeButton: {
+  addToCartButton: {
     backgroundColor: "#ff8403",
     padding: 10,
     borderRadius: 20,
   },
+  addToCartText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  favoriteButton: {
+    padding: 10,
+    backgroundColor: "#ff8403",
+    borderRadius: 20,
+  },
+  favoriteText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#ff8403",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   closeButtonText: {
     color: "#fff",
     fontWeight: "600",
-    textAlign: "center",
   },
 });
 

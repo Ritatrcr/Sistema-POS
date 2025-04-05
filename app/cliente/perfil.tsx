@@ -7,7 +7,12 @@ import Sidebar from './sidebar'; // Import Sidebar component
 
 const Perfil = () => {
   const router = useRouter();
-  const { userName, userEmail } = useAuth(); // Obtener nombre y correo del usuario desde el contexto
+  const { userName, userEmail, logout } = useAuth(); // Obtener nombre, correo y logout desde el contexto
+
+  const handleLogout = async () => {
+    await logout(); // Llama a la función logout del contexto
+    router.push('/auth'); // Redirigir a la pantalla de login después de hacer logout
+  };
 
   return (
     <View style={styles.container}>
@@ -40,6 +45,13 @@ const Perfil = () => {
           style={styles.optionCard} 
           onPress={() => router.push('./configuracion')}>
           <Text style={styles.optionTitle}>Configuración</Text>
+        </TouchableOpacity>
+
+        {/* Botón de Logout */}
+        <TouchableOpacity 
+          style={styles.optionCard} 
+          onPress={handleLogout}>
+          <Text style={styles.optionTitle}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>
 
