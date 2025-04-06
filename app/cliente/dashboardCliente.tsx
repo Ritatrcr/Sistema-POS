@@ -57,7 +57,7 @@ const HomeScreen: React.FC = () => {
       await createOrder(nuevaOrden);
       setCart([]);
       setShowCart(false);
-      router.push("/cliente/dashboardCliente");
+      router.push("./verOrdenes");
     } catch (error) {
       console.error("Error al crear orden:", error);
       Alert.alert("Error", "No se pudo crear la orden.");

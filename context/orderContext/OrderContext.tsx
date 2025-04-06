@@ -7,27 +7,46 @@ interface Order {
   id?: string;
   producto: { idProducto: string; cantidad: number }[];
   precioTotal: number;
-  estado: "ordenado" | "entregado"| "preparando";
+  estado: "ordenado" | "cocinando" | "Listo para recoger" | "entregado" | "listo para pago" | "finalizado" | "cancelado";
   userId: string;
+  fechaRealizacion: string;
+  horaRealizacion: string;
+  horaFinalizacion?: string;
 }
+
 
 // Crear el contexto
 const OrderContext = createContext<any>(null);
+
+const getHoraFechaActual = () => {
+  const ahora = new Date();
+  const fecha = ahora.toLocaleDateString("es-CO"); // ej: "6/4/2025"
+  const hora = ahora.toLocaleTimeString("es-CO");  // ej: "3:42:10 p. m."
+  return { fecha, hora };
+};
+
 
 // Proveedor
 export const OrderProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Crear una nueva orden
-  const createOrder = async (orderData: Omit<Order, "id">) => {
+  const createOrder = async (orderData: Omit<Order, "id" | "fechaRealizacion" | "horaRealizacion">) => {
     try {
       const orderRef = doc(collection(db, "ordenes"));
-      await setDoc(orderRef, orderData);
+      const { fecha, hora } = getHoraFechaActual();
+      const ordenConFecha = {
+        ...orderData,
+        fechaRealizacion: fecha,
+        horaRealizacion: hora,
+      };
+  
+      await setDoc(orderRef, ordenConFecha);
       console.log("Orden creada exitosamente");
     } catch (error) {
       console.error("Error al crear la orden: ", error);
     }
   };
+  
 
   // Obtener todas las órdenes
   const fetchAllOrders = async () => {
@@ -42,6 +61,18 @@ export const OrderProvider: React.FC<React.PropsWithChildren<{}>> = ({ children 
       console.error("Error al obtener órdenes: ", error);
     }
   };
+
+  const setHoraFinalizacion = async (orderId: string) => {
+    try {
+      const horaFinal = new Date().toLocaleTimeString("es-CO");
+      const orderRef = doc(db, "ordenes", orderId);
+      await updateDoc(orderRef, { horaFinalizacion: horaFinal });
+      console.log("Hora de finalización actualizada");
+    } catch (error) {
+      console.error("Error al actualizar hora de finalización:", error);
+    }
+  };
+  
 
   // Actualizar estado de una orden
   const updateOrderStatus = async (orderId: string, nuevoEstado: "ordenado" | "entregado") => {
@@ -61,13 +92,15 @@ export const OrderProvider: React.FC<React.PropsWithChildren<{}>> = ({ children 
 
   return (
     <OrderContext.Provider
-      value={{
-        orders,
-        createOrder,
-        fetchAllOrders,
-        updateOrderStatus,
-      }}
-    >
+    value={{
+      orders,
+      createOrder,
+      fetchAllOrders,
+      updateOrderStatus,
+      setHoraFinalizacion, // 👈
+    }}
+  >
+  
       {children}
     </OrderContext.Provider>
   );

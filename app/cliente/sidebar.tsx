@@ -15,18 +15,17 @@ const Sidebar = () => {
         <Text style={styles.sidebarText}>Home</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push("./verOrdenes")}>
+        <MaterialIcons name="help-outline" size={30} color="#fff" />
+        <Text style={styles.sidebarText}>Ordenes</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push("./codigoQr")}>
         <MaterialIcons name="qr-code" size={30} color="#fff" />
         <Text style={styles.sidebarText}>Código QR</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push("./ayudaCliente")}>
-        <MaterialIcons name="help-outline" size={30} color="#fff" />
-        <Text style={styles.sidebarText}>Ayuda</Text>
-      </TouchableOpacity>
-
-      
-
+    
       <TouchableOpacity style={styles.sidebarItem} onPress={() => router.push("./perfil")}>
         <MaterialIcons name="person" size={30} color="#fff" />
         <Text style={styles.sidebarText}>Perfil</Text>

@@ -16,9 +16,7 @@ const Perfil = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Perfil</Text>
-      </View>
+     
 
       <View style={styles.profileSection}>
         <Image 
