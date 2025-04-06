@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Modal, Image } from "react-native";
-import { useOrder } from "../../context/orderContext/OrderContext";
-import { useAuth } from "../../context/authContext/AuthContext";
-import { useProduct } from "../../context/productsContext/ProductsContext";
-import Sidebar from "./sidebar";
+import { useOrder } from "../../../context/orderContext/OrderContext";
+import { useAuth } from "../../../context/authContext/AuthContext";
+import { useProduct } from "../../../context/productsContext/ProductsContext";
+
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const VerOrdenesCliente = () => {
@@ -118,10 +118,10 @@ const VerOrdenesCliente = () => {
           </TouchableOpacity>
         </ScrollView>
 
-        <Sidebar />
+       
       </Modal>
 
-      <Sidebar />
+    
     </View>
   );
 };

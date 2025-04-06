@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import Sidebar from './sidebar'; // Import Sidebar component
+
 
 const AyudaCliente = () => {
   const router = useRouter();
@@ -33,7 +33,7 @@ const AyudaCliente = () => {
       </ScrollView>
 
       {/* Sidebar at the bottom */}
-      <Sidebar />
+      
     </View>
   );
 };

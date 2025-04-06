@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
-import CameraModal from '../../components/cameramodal'; // Asegúrate de importar el componente modal
-import { useProduct } from '../../context/productsContext/ProductsContext'; // Importa el contexto
-import Sidebar from './sidebar';
+import CameraModal from '../../../components/cameramodal'; // Asegúrate de importar el componente modal
+import { useProduct } from '../../../context/productsContext/ProductsContext'; // Importa el contexto
 
 export default function CrearNuevoProducto() {
   const [nombre, setNombre] = useState('');
@@ -107,7 +106,7 @@ export default function CrearNuevoProducto() {
       </ScrollView>
 
       <CameraModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} setImage={handleImageSelect} />
-      <Sidebar />
+    
     </View>
   );
 }

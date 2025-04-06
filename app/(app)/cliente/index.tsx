@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Modal } from "react-native";
-import { useProduct } from "../../context/productsContext/ProductsContext"; 
-import { useAuth } from "../../context/authContext/AuthContext";
-import Sidebar from "./sidebar";
+import { useProduct } from "../../../context/productsContext/ProductsContext"; 
+import { useAuth } from "../../../context/authContext/AuthContext";
+
 import { Alert } from "react-native";
-import { useOrder } from "../../context/orderContext/OrderContext";
+import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useRouter } from "expo-router";
 
 
@@ -57,7 +57,8 @@ const HomeScreen: React.FC = () => {
       await createOrder(nuevaOrden);
       setCart([]);
       setShowCart(false);
-      router.push("./verOrdenes");
+      router.push("/(app)/cliente/verOrdenes");
+
     } catch (error) {
       console.error("Error al crear orden:", error);
       Alert.alert("Error", "No se pudo crear la orden.");
@@ -200,13 +201,7 @@ const HomeScreen: React.FC = () => {
             )}
           </ScrollView>
 
-          {loadingOrder ? (
-          <ActivityIndicator size="large" color="#ff8403" />
-        ) : (
-          <TouchableOpacity style={styles.orderButton} onPress={confirmarOrden}>
-            <Text style={styles.orderButtonText}>Ordenar</Text>
-          </TouchableOpacity>
-        )}
+          
 
           {cart.length > 0 && (
             <View style={styles.fixedOrderButtonContainer}>
@@ -289,8 +284,7 @@ const HomeScreen: React.FC = () => {
         </View>
       </Modal>
   
-      {/* Sidebar siempre visible */}
-      <Sidebar />
+   
     </View>
   );
 }  

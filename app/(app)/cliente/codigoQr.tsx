@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Sidebar from './sidebar';
+
 
 const CodigoQr = () => {
   return (
@@ -20,7 +20,7 @@ const CodigoQr = () => {
         <MaterialIcons name="qr-code-scanner" size={40} color="#fff" />
         <Text style={styles.scanText}>Scan QR Code</Text>
       </TouchableOpacity>
-      <Sidebar />
+
     </View>
     
   );

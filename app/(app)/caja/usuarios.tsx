@@ -1,34 +1,17 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
-import Sidebar from "./sidebar";
+
 export default function AgregarProducto() {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.mainContent}>
         {/* Title */}
-        <Text style={styles.title}>Agregar Producto</Text>
-        <Text style={styles.subTitle}>Crear un nuevo producto</Text>
+        <Text style={styles.title}>Usuarios </Text>
+      
 
-        {/* Image Select */}
-        <TouchableOpacity style={styles.imageButton}>
-          <Entypo name="camera" size={24} color="black" />
-          <Text style={styles.imageButtonText}>Seleccionar Imagen</Text>
-        </TouchableOpacity>
-
-        {/* Product Details Form */}
-        <TextInput style={styles.input} placeholder="Nombre del Producto" />
-        <TextInput style={styles.input} placeholder="Precio" keyboardType="numeric" />
-        <TextInput style={styles.input} placeholder="Descripción" multiline />
-
-        
-
-        {/* Save Button */}
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>Guardar Producto</Text>
-        </TouchableOpacity>
       </ScrollView>
-      <Sidebar/>
+    
     </View>
   );
 }

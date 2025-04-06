@@ -2,8 +2,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from "../../context/authContext/AuthContext"; // Importa el contexto de autenticación
-import Sidebar from './sidebar'; // Import Sidebar component
+import { useAuth } from "../../../context/authContext/AuthContext"; // Importa el contexto de autenticación
+
 
 const Perfil = () => {
   const router = useRouter();
@@ -53,8 +53,7 @@ const Perfil = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Sidebar at the bottom */}
-      <Sidebar />
+     
     </View>
   );
 };

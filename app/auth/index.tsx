@@ -63,11 +63,11 @@ const AuthScreen = () => {
 
       // Redirigir según el rol del usuario
       if (userRole === "admin") {
-        router.push("/caja/crearProducto");
+        router.push("/(app)/caja");
       } else if (userRole === "user") {
-        router.push("/cliente/dashboardCliente");
-
-      } 
+        router.push("/(app)/cliente");
+      }
+      
     } catch (error: any) {
       Alert.alert("Error", getErrorMessage(error.code));
     }
