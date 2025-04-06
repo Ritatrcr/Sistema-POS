@@ -3,8 +3,10 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Modal, Image } fr
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useAuth } from "../../../context/authContext/AuthContext";
 import { useProduct } from "../../../context/productsContext/ProductsContext";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 
 const VerOrdenesCliente = () => {
   const { orders, fetchAllOrders } = useOrder();
@@ -13,9 +15,12 @@ const VerOrdenesCliente = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
-  useEffect(() => {
-    fetchAllOrders();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllOrders();
+    }, [])
+  );
+  
 
   if (!user) return <Text>No estás autenticado.</Text>;
 
