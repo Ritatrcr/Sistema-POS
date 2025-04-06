@@ -6,7 +6,6 @@ import { getAuth } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyAfTXlmYHaN_4moTJNyRGeeEjd6XlhRZhc",
   authDomain: "sistema-pos-69026.firebaseapp.com",
@@ -16,6 +15,7 @@ const firebaseConfig = {
   appId: "1:706222144600:web:2651c56b3af0c29b5e9e2d",
   measurementId: "G-8LQMSF0774"
 };
+
 
 const app = initializeApp(firebaseConfig);
 export const storage = getStorage(app); 

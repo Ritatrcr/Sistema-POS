@@ -2,10 +2,10 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { db, storage } from "../../utils/FirebaseConfig"; 
 import { collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, DocumentData } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Platform } from "react-native";
 
 // Define los tipos para el producto
 interface Product {
-  id?: string; // Puede que no esté presente al crear un producto nuevo
   nombre: string;
   ingredientes: string;
   tiempoPreparacion: string;
@@ -14,44 +14,36 @@ interface Product {
   descripcion: string;
   pasos: string[];
   imageUrl?: string; // Agregar propiedad para la URL de la imagen
-  precio: number; // Precio del producto
 }
 
 // Crear el contexto
 const ProductContext = createContext<any>(null);
 
-const uploadImage = async (uri: string) => {
-  console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n Subiendo imagen...");
+const uploadImage = async (uri: string, id: string) => {
   const storage = getStorage();
-  const storageRef = ref(storage, "posts/" + Date.now());
-
+  const storageRef = ref(storage, "products/" + Date.now() + id + ".jpg");
+  
   try {
-    console.log("URI de la imagen: ", uri);
-    // Verifica si la URI es válida
-    if (!uri.startsWith('file://')) {
-      console.error("La URI no es válida: ", uri);
-      return "";
-    }
-
+    console.log("URI de la imagen:", uri);
+    
+    // Convertir el URI de la imagen en un blob
     const response = await fetch(uri);
     const blob = await response.blob();
-
-    console.log("Blob Type: ", blob.type); // Asegúrate de que es una imagen
-
-    // Carga la imagen
+    console.log("Blob creado exitosamente:", blob);
+    
+    // Subir el blob a Firebase Storage
     const snapshot = await uploadBytes(storageRef, blob);
+    console.log("Imagen subida exitosamente:", snapshot);
+    
+    // Obtener la URL de descarga de la imagen
     const url = await getDownloadURL(storageRef);
-
-    console.log("Imagen subida exitosamente!");
-    return url ?? "";
+    console.log("URL de la imagen subida:", url);
+    
+    return url ?? ""; // Devolver la URL de la imagen
   } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error al subir la imagen:", error.message);
-    } else {
-      console.error("Error al subir la imagen:", error);
-    }
-    return "";
+    console.error("Error al subir la imagen:", error);
   }
+  return "";
 };
 
 // Proveedor del contexto
@@ -60,13 +52,9 @@ export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ childre
 
   // Crear un nuevo producto
   const createProduct = async (productData: Product, imageUri: string) => {
-    console.log("Creando producto...");
-    console.log("Datos del producto:", productData);
-    console.log("URI de la imagen:", imageUri);
     try {
       const productRef = doc(collection(db, "productos"));
-
-      const imageUrl = await uploadImage(imageUri); // Subir la imagen y obtener la URL
+      const imageUrl = await uploadImage(imageUri, productRef.id); // Subir la imagen y obtener la URL
       const newProduct = { ...productData, imageUrl }; // Agregar la URL de la imagen al producto
       await setDoc(productRef, newProduct); // Guardar el producto con la URL de la imagen
       console.log("Producto creado exitosamente");
@@ -109,7 +97,7 @@ export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ childre
   const updateProduct = async (id: string, updatedProduct: Product, imageUri?: string) => {
     try {
       if (imageUri) {
-        const imageUrl = await uploadImage(imageUri); // Subir nueva imagen y obtener URL
+        const imageUrl = await uploadImage(imageUri, id); // Subir nueva imagen y obtener URL
         updatedProduct = { ...updatedProduct, imageUrl }; // Agregar la URL de la imagen al producto
       }
       const docRef = doc(db, "productos", id);
