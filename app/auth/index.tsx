@@ -65,7 +65,8 @@ const AuthScreen = () => {
       if (userRole === "admin") {
         router.push("/caja/crearProducto");
       } else if (userRole === "user") {
-        router.push("./cliente/dashboardCliente");
+        router.push("/cliente/dashboardCliente");
+
       } 
     } catch (error: any) {
       Alert.alert("Error", getErrorMessage(error.code));

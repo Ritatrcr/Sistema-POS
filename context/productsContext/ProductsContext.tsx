@@ -5,6 +5,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Define los tipos para el producto
 interface Product {
+  id?: string; // Puede que no esté presente al crear un producto nuevo
   nombre: string;
   ingredientes: string;
   tiempoPreparacion: string;
@@ -13,13 +14,13 @@ interface Product {
   descripcion: string;
   pasos: string[];
   imageUrl?: string; // Agregar propiedad para la URL de la imagen
+  precio: number; // Precio del producto
 }
 
 // Crear el contexto
 const ProductContext = createContext<any>(null);
 
 const uploadImage = async (uri: string) => {
-
   console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n Subiendo imagen...");
   const storage = getStorage();
   const storageRef = ref(storage, "posts/" + Date.now());
@@ -49,15 +50,9 @@ const uploadImage = async (uri: string) => {
     } else {
       console.error("Error al subir la imagen:", error);
     }
-    if (error instanceof Error) {
-      console.error("Pila de errores: ", error.stack);
-    } else {
-      console.error("Error desconocido: ", error);
-    }
     return "";
   }
 };
-
 
 // Proveedor del contexto
 export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
@@ -66,12 +61,9 @@ export const ProductProvider: React.FC<React.PropsWithChildren<{}>> = ({ childre
   // Crear un nuevo producto
   const createProduct = async (productData: Product, imageUri: string) => {
     console.log("Creando producto...");
-      console.log("Datos del producto:", productData);
-      console.log("URI de la imagen:", imageUri);
+    console.log("Datos del producto:", productData);
+    console.log("URI de la imagen:", imageUri);
     try {
-      console.log("Creando producto...");
-      console.log("Datos del producto:", productData);
-      console.log("URI de la imagen:", imageUri);
       const productRef = doc(collection(db, "productos"));
 
       const imageUrl = await uploadImage(imageUri); // Subir la imagen y obtener la URL
