@@ -11,6 +11,7 @@ export default function CrearNuevoProducto() {
   const [tiempoPreparacion, setTiempoPreparacion] = useState('');
   const [ingredientes, setIngredientes] = useState('');
   const [procedimiento, setProcedimiento] = useState('');
+  const [precio, setPrecio] = useState('');
   const [image, setImage] = useState<string | null>(null); // Para la imagen seleccionada
   const [isModalVisible, setIsModalVisible] = useState(false); // Para controlar la visibilidad del modal
   const [selectedCategory, setSelectedCategory] = useState(''); // Para controlar la categoría seleccionada
@@ -31,6 +32,7 @@ export default function CrearNuevoProducto() {
       tiempoPreparacion: tiempoPreparacion || "sin información",
       ingredientes: ingredientes || "sin información",
       procedimiento: procedimiento || "sin información",
+      precio: precio || "0",
       calificaciones: [], 
       pasos: procedimiento.split("\n") || [], 
     };
@@ -99,6 +101,7 @@ export default function CrearNuevoProducto() {
 
         <TextInput style={styles.input} placeholder="Ingredientes" multiline value={ingredientes} onChangeText={setIngredientes} />
         <TextInput style={styles.input} placeholder="Procedimiento" multiline value={procedimiento} onChangeText={setProcedimiento} />
+        <TextInput style={styles.input} placeholder="Precio" multiline value={precio} onChangeText={setPrecio} />
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveProduct}>
           <Text style={styles.saveButtonText}>Crear producto</Text>
