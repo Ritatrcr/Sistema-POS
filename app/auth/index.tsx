@@ -66,7 +66,10 @@ const AuthScreen = () => {
         router.push("/(app)/caja");
       } else if (userRole === "user") {
         router.push("/(app)/cliente");
+      } else if (userRole === "cocina") {
+        router.push("/(app)/cocina");
       }
+
       
     } catch (error: any) {
       Alert.alert("Error", getErrorMessage(error.code));
