@@ -112,7 +112,7 @@ const HomeScreen: React.FC = () => {
     }
   }, [searchQuery, products]);
 
-  const categories = ["Todas", "Entradas", "Platos Fuertes", "Bebidas", "Postres", "Favoritos"];
+  const categories = ["Todas", "Entrada", "Platos Fuertes", "Bebidas", "Postres"];
 
   const renderItem = ({ item }: { item: Product }) => {
     const rating = item.calificaciones.length > 0 ? item.calificaciones[0] : 0;
@@ -139,7 +139,7 @@ const HomeScreen: React.FC = () => {
         <View style={styles.cardInfo}>
           <Text style={styles.itemName}>{item.nombre}</Text>
           <Text style={styles.itemDetails}>{item.precio} $</Text>
-          <Text style={styles.itemDetails}>{item.tiempoPreparacion} mins - {item.categoria}</Text>
+          <Text style={styles.itemDetails}>{item.tiempoPreparacion}  - {item.categoria}</Text>
           {item.calificaciones.length > 0 && (
             <Text style={styles.ratingText}>{stars}</Text>
           )}
