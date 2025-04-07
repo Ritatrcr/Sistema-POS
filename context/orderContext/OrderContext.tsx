@@ -75,7 +75,7 @@ export const OrderProvider: React.FC<React.PropsWithChildren<{}>> = ({ children 
   
 
   // Actualizar estado de una orden
-  const updateOrderStatus = async (orderId: string, nuevoEstado: "ordenado" | "entregado") => {
+  const updateOrderStatus = async (orderId: string, nuevoEstado: "ordenado" | "cocinando" | "Listo para recoger" | "entregado" | "listo para pago" | "finalizado" | "cancelado") => {
     try {
       const orderRef = doc(db, "ordenes", orderId);
       await updateDoc(orderRef, { estado: nuevoEstado });

@@ -1,93 +1,98 @@
+// app/ayudaCliente.tsx
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
-import Entypo from '@expo/vector-icons/Entypo';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from "../../../context/authContext/AuthContext";
 
-export default function AgregarProducto() {
+
+const AyudaCliente = () => {
+  const router = useRouter();
+   const { userName, user } = useAuth();
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.mainContent}>
-        {/* Title */}
-        <Text style={styles.title}>casita pestaña principal</Text>
-        <Text style={styles.subTitle}>blabalbalbala</Text>
+        <View style={styles.header}>
+          <Text style={styles.title}>Hola, {userName || "Invitado"}</Text>
+          
+        </View>
 
+        <View style={styles.helpSection}>
+          <TouchableOpacity style={styles.helpCard} onPress={() => router.push('/caja/productos')}>
+            <Text style={styles.helpTitle}>Productos</Text>
+            <Text style={styles.helpSubtitle}>Visualiza,modifica o elimina tus productos </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.helpCard} onPress={() => router.push('/caja/crearProducto')}>
+            <Text style={styles.helpTitle}>Crear producto</Text>
+            <Text style={styles.helpSubtitle}>Toma o selecciona la foto del producto, agrega sus caracteristicas y crealo.</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.helpCard} onPress={() => router.push('/caja/informes')}>
+            <Text style={styles.helpTitle}>Informes</Text>
+            <Text style={styles.helpSubtitle}>Genera informes de: ¿Que es lo que mas piden en tu negocio? etc..</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.helpCard} onPress={() => router.push('/caja/pedidos')}>
+            <Text style={styles.helpTitle}>Pedidos</Text>
+            <Text style={styles.helpSubtitle}>Gestiona tus Pedidos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.helpCard} onPress={() => router.push('/caja/usuarios')}>
+            <Text style={styles.helpTitle}>Usuarios</Text>
+            <Text style={styles.helpSubtitle}>Gestiona tus usuarios</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
+
     
+      
     </View>
   );
-}
+};
+
+export default AyudaCliente;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#fff',
   },
   mainContent: {
     flex: 1,
+    padding: 20,
+    paddingTop: 70,
+  },
+  header: {
+    marginBottom: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 10,
   },
-  subTitle: {
-    fontSize: 18,
-    color: '#666',
-    marginBottom: 20,
+  icon: {
+    color: '#FBB03B',
   },
-  imageButton: {
-    backgroundColor: '#F0F0F0',
-    padding: 15,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 20,
+  helpSection: {
+    marginTop: 30,
   },
-  imageButtonText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#333',
-  },
-  input: {
-    backgroundColor: '#F0F0F0',
-    borderRadius: 12,
-    padding: 10,
-    fontSize: 16,
-    marginBottom: 15,
-  },
-  editButton: {
-    backgroundColor: '#FBB03B',
-    padding: 15,
+  helpCard: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#FBB03B',
+    shadowColor: '#000',
+    padding: 20,
     borderRadius: 12,
     marginBottom: 15,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
-  editButtonText: {
-    color: '#fff',
+  helpTitle: {
     fontSize: 18,
     fontWeight: '600',
+    color: '#A36F3E',
   },
-  deleteButton: {
-    backgroundColor: '#FF6347',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
-    alignItems: 'center',
-  },
-  deleteButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  saveButton: {
-    backgroundColor: '#32CD32',
-    padding: 15,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+  helpSubtitle: {
+    fontSize: 14,
+    color: '',
+    marginTop: 5,
   },
 });

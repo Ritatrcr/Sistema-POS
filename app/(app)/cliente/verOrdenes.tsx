@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Modal, Image } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useAuth } from "../../../context/authContext/AuthContext";
 import { useProduct } from "../../../context/productsContext/ProductsContext";
+
+import DetallesOrdenModal from "../../../components/DetallesOrdenModal"; // Importamos el modal
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -89,39 +91,12 @@ const VerOrdenesCliente = () => {
         )}
       </ScrollView>
 
-      <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
-        <ScrollView style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Detalle de la Orden</Text>
-          {selectedOrder && (
-            <View>
-              <Text style={styles.bold}>ID:</Text> <Text>{selectedOrder.id}</Text>
-              <Text style={styles.bold}>Estado:</Text> <Text>{selectedOrder.estado}</Text>
-              <Text style={styles.bold}>Total:</Text> <Text>${selectedOrder.precioTotal}</Text>
-              <Text style={styles.bold}>Fecha:</Text> <Text>{selectedOrder.fechaRealizacion}</Text>
-              <Text style={styles.bold}>Hora inicio:</Text> <Text>{selectedOrder.horaRealizacion}</Text>
-              <Text style={styles.bold}>Hora fin:</Text> <Text>{selectedOrder.horaFinalizacion || "-"}</Text>
-              <Text style={[styles.modalTitle, { fontSize: 18, marginTop: 20 }]}>Productos</Text>
-              {selectedOrder.producto.map((p: any, i: number) => (
-                <View key={i} style={styles.productCard}>
-                  <Image source={{ uri: p.imageUrl }} style={styles.productImage} />
-                  <View style={styles.productDetails}>
-                    <Text style={styles.bold}>Nombre:</Text> <Text>{p.nombre}</Text>
-                    <Text style={styles.bold}>Precio:</Text> <Text>${p.precio}</Text>
-                    <Text style={styles.bold}>Cantidad:</Text> <Text>{p.cantidad}</Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          )}
-          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-            <Text style={{ color: "white" }}>Cerrar</Text>
-          </TouchableOpacity>
-        </ScrollView>
-
-       
-      </Modal>
-
     
+      <DetallesOrdenModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        selectedOrder={selectedOrder}
+      />
     </View>
   );
 };
