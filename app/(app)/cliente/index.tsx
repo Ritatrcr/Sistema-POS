@@ -112,7 +112,7 @@ const HomeScreen: React.FC = () => {
     }
   }, [searchQuery, products]);
 
-  const categories = ["Todas", "Entradas", "Platos Fuertes", "Bebidas", "Postres", "Favoritos"];
+  const categories = ["Todas", "Entrada", "Platos Fuertes", "Bebidas", "Postres", "Favoritos"];
 
   const renderItem = ({ item }: { item: Product }) => {
     const rating = item.calificaciones.length > 0 ? item.calificaciones[0] : 0;
