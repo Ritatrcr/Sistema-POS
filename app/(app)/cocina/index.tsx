@@ -1,33 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator, Modal } from "react-native";
-import { useOrder } from "../../../context/orderContext/OrderContext"; // Usamos el contexto de órdenes
-import { useProduct } from "../../../context/productsContext/ProductsContext"; // Usamos el contexto de productos
-import { Ionicons } from "@expo/vector-icons"; // Para los íconos
-
+import { useOrder } from "../../../context/orderContext/OrderContext";
+import { useProduct } from "../../../context/productsContext/ProductsContext";
+import { Ionicons } from "@expo/vector-icons";
 const CocinaScreen = () => {
   const { orders, updateOrderStatus, fetchAllOrders } = useOrder();
-  const { fetchProductById } = useProduct(); // Hook para obtener productos
-  const [sortedOrders, setSortedOrders] = useState<Order[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [productsNames, setProductsNames] = useState<{ [key: string]: string }>({}); // Para almacenar los nombres de los productos
-  const [loading, setLoading] = useState<boolean>(false); // Estado para el loader
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // Para almacenar la orden seleccionada
-  const [modalVisible, setModalVisible] = useState<boolean>(false); // Para controlar la visibilidad del modal
-  const [selectedStatus, setSelectedStatus] = useState<string>("todos"); // Estado para el filtro por estado
+  const { fetchProductById } = useProduct();
+  const [sortedOrders, setSortedOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [productsNames, setProductsNames] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("todos");
+  const [viewOrders, setViewOrders] = useState(false);
 
-  // Ordenamos las órdenes por fecha y hora de realización
   useEffect(() => {
-    setLoading(true); // Iniciamos el loader
-    const sorted = [...orders].sort((a, b) => {
-      const aDate = new Date(`${a.fechaRealizacion} ${a.horaRealizacion}`);
-      const bDate = new Date(`${b.fechaRealizacion} ${b.horaRealizacion}`);
-      return aDate - bDate; // Ordenar cronológicamente
-    });
+    setLoading(true);
+    const sorted = [...orders].sort((a, b) => new Date(`${a.fechaRealizacion} ${a.horaRealizacion}`) - new Date(`${b.fechaRealizacion} ${b.horaRealizacion}`));
     setSortedOrders(sorted);
-    setLoading(false); // Detenemos el loader
+    setLoading(false);
   }, [orders]);
 
-  // Filtrar órdenes por estado
   useEffect(() => {
     if (selectedStatus === "todos") {
       setFilteredOrders(sortedOrders);
@@ -36,124 +30,85 @@ const CocinaScreen = () => {
     }
   }, [selectedStatus, sortedOrders]);
 
-  // Obtener el nombre del producto por idProducto
-  const getProductName = async (idProducto: string) => {
+  const getProductName = async (idProducto) => {
     if (!productsNames[idProducto]) {
       const product = await fetchProductById(idProducto);
       if (product) {
-        setProductsNames((prevState) => ({
-          ...prevState,
-          [idProducto]: product.nombre, // Guardamos el nombre del producto
-        }));
+        setProductsNames(prevState => ({ ...prevState, [idProducto]: product.nombre }));
       }
     }
   };
 
-  // Cambiar el estado de la orden
-  const handleOrderStatusChange = async (orderId: string, newStatus: "cocinando" | "Listo para recoger" | "entregado") => {
-    setLoading(true); // Iniciamos el loader mientras cambiamos el estado
+  const handleOrderStatusChange = async (orderId, newStatus) => {
+    setLoading(true);
     await updateOrderStatus(orderId, newStatus);
-    await fetchAllOrders(); // Volvemos a traer todas las órdenes después de actualizar el estado
-    setLoading(false); // Detenemos el loader
+    await fetchAllOrders();
+    setLoading(false);
   };
 
-  // Mostrar los detalles de una orden
-  const handleOrderDetails = (order: Order) => {
-    setSelectedOrder(order); // Establecer la orden seleccionada
-    setModalVisible(true); // Mostrar el modal
+  const handleOrderDetails = (order) => {
+    setSelectedOrder(order);
+    setModalVisible(true);
   };
 
-  // Cerrar el modal
   const closeModal = () => {
-    setModalVisible(false); // Ocultar el modal
-    setSelectedOrder(null); // Limpiar la orden seleccionada
+    setModalVisible(false);
+    setSelectedOrder(null);
   };
 
-  // Renderizamos cada orden
-  const renderOrderItem = ({ item }: any) => (
+  const renderOrderItem = ({ item }) => (
     <View style={[styles.orderCard, item.estado === "ordenado" ? styles.newOrder : null]}>
       <Text style={styles.orderTitle}>Orden ID: {item.id}</Text>
       <Text style={styles.orderDate}>Fecha: {item.fechaRealizacion}</Text>
       <Text style={styles.orderTime}>Hora: {item.horaRealizacion}</Text>
       
-      {/* Mostrar productos de la orden con el nombre en lugar del id */}
-      {item.producto.map((producto: any, index: number) => {
-        getProductName(producto.idProducto); // Llamar para obtener el nombre del producto
-        return (
-          <Text key={index} style={styles.productText}>
-            {productsNames[producto.idProducto] || "Sin nombre"} - Cantidad: {producto.cantidad}
-          </Text>
-        );
+      {item.producto.map((producto, index) => {
+        getProductName(producto.idProducto);
+        return <Text key={index} style={styles.productText}>{productsNames[producto.idProducto] || "Sin nombre"} - Cantidad: {producto.cantidad}</Text>;
       })}
 
       <Text style={styles.orderStatus}>Estado: {item.estado}</Text>
 
-      {/* Botones para cambiar el estado de la orden */}
       {item.estado === "ordenado" && (
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={() => handleOrderStatusChange(item.id, "cocinando")}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "cocinando")}>
           <Text style={styles.buttonText}>Comenzar a cocinar</Text>
         </TouchableOpacity>
       )}
       {item.estado === "cocinando" && (
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={() => handleOrderStatusChange(item.id, "Listo para recoger")}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "Listo para recoger")}>
           <Text style={styles.buttonText}>Listo para recoger</Text>
         </TouchableOpacity>
       )}
       {item.estado === "Listo para recoger" && (
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={() => handleOrderStatusChange(item.id, "entregado")}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "entregado")}>
           <Text style={styles.buttonText}>Entregar</Text>
         </TouchableOpacity>
       )}
 
-      {/* Ver detalles de la orden (Ícono en la parte superior derecha) */}
-      <TouchableOpacity 
-        style={styles.detailsButton}
-        onPress={() => handleOrderDetails(item)}
-      >
+      <TouchableOpacity style={styles.detailsButton} onPress={() => handleOrderDetails(item)}>
         <Ionicons name="eye-outline" color="#fff" size={24} />
       </TouchableOpacity>
     </View>
   );
 
-  // Renderizamos los detalles de la orden en un modal
   const renderOrderDetails = () => {
     if (!selectedOrder) return null;
     return (
-      <Modal 
-        visible={modalVisible} 
-        animationType="slide" 
-        transparent={true} 
-        onRequestClose={closeModal}
-      >
+      <Modal visible={modalVisible} animationType="slide" transparent={true} onRequestClose={closeModal}>
         <View style={styles.modalOverlay}>
           <View style={styles.detailsContainer}>
             <Text style={styles.detailsTitle}>Detalles de la orden</Text>
-            {selectedOrder.producto.map((producto: any, index: number) => (
+            {selectedOrder.producto.map((producto, index) => (
               <View key={index} style={styles.productCard}>
                 <Text style={styles.productName}>{productsNames[producto.idProducto] || "Sin nombre"}</Text>
                 <Text>Cantidad: {producto.cantidad}</Text>
               </View>
             ))}
             
-            {/* Mostrar el proceso de la orden */}
             <View style={styles.processContainer}>
               {["ordenado", "cocinando", "Listo para recoger", "entregado"].map((estado, index) => (
                 <View key={estado} style={styles.processStep}>
-                  <View 
-                    style={[
-                      styles.circle, 
-                      selectedOrder.estado === estado ? styles.activeCircle : null
-                    ]}
-                  >
+                  <View style={[styles.circle, selectedOrder.estado === estado ? styles.activeCircle : null]}>
                     <Text style={styles.circleText}>{index + 1}</Text>
                   </View>
                   <Text style={styles.processText}>{estado}</Text>
@@ -170,50 +125,39 @@ const CocinaScreen = () => {
     );
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Órdenes de Cocina</Text>
-
-      {/* Botones con íconos para cambiar el filtro */}
+  const renderButtonsState = () => {
+    return (
       <View style={styles.filterButtonsContainer}>
-        {["todos", "ordenado", "cocinando", "Listo para recoger", "entregado"].map((estado, index) => (
-          <TouchableOpacity
-            key={estado}
-            style={[
-              styles.filterButton,
-              selectedStatus === estado && styles.selectedFilterButton
-            ]}
-            onPress={() => setSelectedStatus(estado)}
-          >
-            <Ionicons
-              name={
-                estado === "todos" ? "list-outline" :
-                estado === "ordenado" ? "clipboard-outline" :
-                estado === "cocinando" ? "restaurant-outline" :
-                estado === "Listo para recoger" ? "checkmark-circle-outline" :
-                "checkmark-done-outline"
-              }
-              size={24}
-              color="#fff"
-            />
+        {["todos", "ordenado", "cocinando", "Listo para recoger", "entregado"].map((estado) => (
+          <TouchableOpacity key={estado} style={[styles.filterButton, selectedStatus === estado && styles.selectedFilterButton]} onPress={() => { setSelectedStatus(estado); setViewOrders(true); }}>
+            <Ionicons name={estado === "todos" ? "list-outline" : estado === "ordenado" ? "clipboard-outline" : estado === "cocinando" ? "restaurant-outline" : estado === "Listo para recoger" ? "checkmark-circle-outline" : "checkmark-done-outline"} size={24} color="#fff" />
             <Text style={styles.filterButtonText}>{estado}</Text>
           </TouchableOpacity>
         ))}
       </View>
+    );
+  };
 
-      {/* Mostrar loader mientras se están obteniendo las órdenes */}
-      {loading ? (
-        <ActivityIndicator size="large" color="#FBB03B" />
-      ) : (
-        <>
-          <FlatList
-            data={filteredOrders}
-            renderItem={renderOrderItem}
-            keyExtractor={(item) => item.id}
-          />
-          {renderOrderDetails()}
-        </>
-      )}
+  const renderOrdersByState = () => {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.backButton} onPress={() => setViewOrders(false)}>
+          <Ionicons name="arrow-back-outline" size={24} color="#080808" />
+        </TouchableOpacity>
+        <Text style={styles.title}>{selectedStatus}</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#FBB03B" />
+        ) : (
+          <FlatList data={filteredOrders} renderItem={renderOrderItem} keyExtractor={(item) => item.id} />
+        )}
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      {!viewOrders ? renderButtonsState() : renderOrdersByState()}
+      {renderOrderDetails()}
     </View>
   );
 };
@@ -233,23 +177,31 @@ const styles = StyleSheet.create({
   },
   filterButtonsContainer: {
     flexDirection: "row",
+    flexWrap: "wrap", // Permite que los botones se ajusten si hay más de 2 en la fila
     justifyContent: "space-between",
     marginBottom: 20,
   },
   filterButton: {
     backgroundColor: "#FBB03B",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    width: "48%",  // Esto hace que cada botón ocupe el 48% del ancho, dejando espacio entre ellos
+    marginBottom: 10,
+    paddingVertical: 20,  // Aumenta el espacio vertical
     borderRadius: 8,
-    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column", // Icono arriba y texto abajo
   },
   selectedFilterButton: {
-    backgroundColor: "#E57E1B", // Resaltar el estado seleccionado
+    backgroundColor: "#E57E1B",
   },
   filterButtonText: {
     color: "#fff",
-    marginLeft: 5,
+    fontSize: 16,
+    marginTop: 5,  // Espacio entre el icono y el texto
+  },
+  filterButtonIcon: {
+    fontSize: 30, // Tamaño del icono
+    color: "#fff",
   },
   orderCard: {
     backgroundColor: "#FFF",
@@ -261,7 +213,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   newOrder: {
-    borderColor: "#FBB03B", // Resaltar las órdenes nuevas
+    borderColor: "#FBB03B",
   },
   orderTitle: {
     fontSize: 18,
@@ -344,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   activeCircle: {
-    backgroundColor: "#FBB03B", // Resaltar el estado activo
+    backgroundColor: "#FBB03B",
   },
   circleText: {
     color: "#FFF",
