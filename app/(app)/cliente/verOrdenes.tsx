@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useAuth } from "../../../context/authContext/AuthContext";
 import { useProduct } from "../../../context/productsContext/ProductsContext";
-import { useFocusEffect } from "expo-router";
-import DetallesOrdenModal from "@/components/DetallesOrdenModal";
 
+import DetallesOrdenModal from "../../../components/DetallesOrdenModal"; // Importamos el modal
+
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const VerOrdenesCliente = () => {
   const { orders, fetchAllOrders } = useOrder();
@@ -14,12 +15,9 @@ const VerOrdenesCliente = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchAllOrders();
-    }, [])
-  );
-  
+  useEffect(() => {
+    fetchAllOrders();
+  }, []);
 
   if (!user) return <Text>No estás autenticado.</Text>;
 
@@ -93,7 +91,7 @@ const VerOrdenesCliente = () => {
         )}
       </ScrollView>
 
-    
+      {/* llama al modal y le pasa los props */}
       <DetallesOrdenModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}

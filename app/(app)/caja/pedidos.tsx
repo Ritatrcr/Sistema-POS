@@ -68,7 +68,7 @@ const Pedidos = () => {
     setSelectedOrder({ ...order, producto: productosEnOrden });
     setNewState(order.estado); // Pre-cargar el estado actual de la orden
 
-    if (order.estado === "listo para pago") {
+    if (order.estado === "entregado") {
       setPaymentModalVisible(true); 
     } else {
       setModalVisible(true);  //si no, abrimos el modal de detalles

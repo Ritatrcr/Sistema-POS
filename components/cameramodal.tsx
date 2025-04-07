@@ -53,7 +53,7 @@ export default function CameraModal({ isVisible, setIsVisible, setImage }: any) 
           ) : (
             <View style={styles.permissionContainer}>
               <Text style={styles.permissionMessage}>
-                "PS Express" quiere acceder a tus fotos
+                "ManGusteau quiere acceder a tus fotos
               </Text>
               <Text style={styles.permissionDescription}>
                 Al otorgar acceso, podrá editar fotografías de su biblioteca de fotografías.
