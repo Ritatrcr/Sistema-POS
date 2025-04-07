@@ -6,6 +6,8 @@ import { useAuth } from "../../../context/authContext/AuthContext";
 import { Alert } from "react-native";
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+
 
 
 interface Product {
@@ -160,7 +162,7 @@ const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       {showCart ? (
         <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40 }}>
-          {/* Header con flecha de volver */}
+         
           <View style={styles.cartHeader}>
             <TouchableOpacity onPress={() => setShowCart(false)} style={styles.backButton}>
               <Text style={styles.backButtonIcon}>←</Text>
@@ -216,33 +218,52 @@ const HomeScreen: React.FC = () => {
       ) : (
 
         <ScrollView style={styles.mainContent}>
-          <View style={styles.header}>
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
             <Text style={styles.greeting}>Hola, {userName || "Invitado"}</Text>
-            <Text style={styles.question}>¿De qué tienes antojos hoy?</Text>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Escribe para buscar"
-              placeholderTextColor="#B0B0B0"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
+
+            <TouchableOpacity style={styles.cartIconButton} onPress={() => setShowCart(true)}>
+              <Ionicons name="cart-outline" size={28} color="grey" />
+              {cart.length > 0 && <Text style={styles.cartCount}>{cart.length}</Text>}
+            </TouchableOpacity>
+
           </View>
+
+              <Text style={styles.question}>¿De qué tienes antojos hoy?</Text>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Escribe para buscar"
+                placeholderTextColor="#B0B0B0"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+            </View>
   
           <ScrollView horizontal style={styles.categories} showsHorizontalScrollIndicator={false}>
-            {categories.map((category, index) => (
+          {categories.map((category, index) => {
+            const isSelected = selectedCategory === category;
+            return (
               <TouchableOpacity
-                key={index}
-                style={[
-                  styles.categoryButton,
-                  selectedCategory === category && { backgroundColor: "#ff8403" },
-                ]}
-                onPress={() => setSelectedCategory(category)}
-              >
-                <Text style={styles.categoryText}>{category}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-  
+                      key={index}
+                      style={[
+                        styles.categoryButton,
+                        isSelected ? styles.categoryButtonSelected : styles.categoryButtonUnselected,
+                      ]}
+                      onPress={() => setSelectedCategory(category)}
+                    >
+                      <Text
+                        style={[
+                          styles.categoryText,
+                          isSelected ? styles.categoryTextSelected : styles.categoryTextUnselected,
+                        ]}
+                      >
+                        {category}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>   
+
           <View style={styles.foodSection}>
             <Text style={styles.sectionTitle}>
               {selectedCategory === "Todas" ? "Todos los Platos" : selectedCategory}
@@ -253,17 +274,14 @@ const HomeScreen: React.FC = () => {
                 <ActivityIndicator size="large" color="#ff8403" />
               </View>
             ) : (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {filteredProducts
-                  .filter((item) => selectedCategory === "Todas" || item.categoria === selectedCategory)
-                  .map((item) => renderItem({ item }))}
-              </ScrollView>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+                  {filteredProducts
+                    .filter((item) => selectedCategory === "Todas" || item.categoria === selectedCategory)
+                    .map((item) => renderItem({ item }))}
+                </View>
+
             )}
           </View>
-  
-          <TouchableOpacity style={styles.viewCartButton} onPress={() => setShowCart(true)}>
-            <Text style={styles.viewCartText}>Ver carrito ({cart.length} productos)</Text>
-          </TouchableOpacity>
         </ScrollView>
       )}
   
@@ -327,15 +345,33 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   categoryButton: {
-    padding: 10,
-    borderRadius: 12,
-    backgroundColor: "#FBB03B",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
     marginRight: 10,
   },
-  categoryText: {
-    color: "#fff",
-    fontWeight: "600",
+  
+  categoryButtonSelected: {
+    backgroundColor: "#FBB03B",
   },
+  
+  categoryButtonUnselected: {
+    backgroundColor: "transparent",
+  },
+  
+  categoryText: {
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  
+  categoryTextSelected: {
+    color: "#fff",
+  },
+  
+  categoryTextUnselected: {
+    color: "#aaa",
+  },
+  
   foodSection: {
     marginBottom: 40,
   },
@@ -346,9 +382,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   card: {
-    width: 170,
-    marginTop: 10,
-    marginRight: 15,
+    width: "48%", // Cambio aquí
+    marginBottom: 15,
     borderRadius: 15,
     backgroundColor: "#F8F8F8",
     position: "relative",
@@ -358,6 +393,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
+  
   foodImage: {
     width: "100%",
     height: 120,
@@ -574,6 +610,42 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  
+  cartIconButton: {
+    position: "relative",
+    padding: 10,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 9,
+    elevation: 15,
+  },
+  
+  cartIcon: {
+    fontSize: 26,
+  },
+  
+  cartCount: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "#ff8403",
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
   
   
   
