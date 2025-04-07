@@ -1,7 +1,6 @@
 import React from 'react';
 import { Modal, ScrollView, Text, View, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { useOrder } from '../context/orderContext/OrderContext'; // Importar el contexto
-
+import { useOrder } from '../context/orderContext/OrderContext'; 
 interface Product {
   imageUrl: string;
   nombre: string;
@@ -36,9 +35,9 @@ const PagoproductoModal: React.FC<DetallesOrdenModalProps> = ({ modalVisible, se
   const handleOrderPaid = async () => {
     if (selectedOrder) {
       try {
-        // Actualizar el estado de la orden a "finalizado"
+       
         await updateOrderStatus(selectedOrder.id, "finalizado");
-        setModalVisible(false); // Cerrar el modal después de la actualización
+        setModalVisible(false); // y
       } catch (error) {
         console.error("Error al actualizar la orden: ", error);
       }

@@ -50,7 +50,7 @@ const Pedidos = () => {
   const ordenesFiltradas = orders.filter((order: { estado: string }) => order.estado === estadoFiltro);
 
   // Filtrar las órdenes "Listo para pago"
-  const ordenesListasParaPago = orders.filter((order: { estado: string }) => order.estado === "listo para pago");
+  const ordenesListasParaPago = orders.filter((order: { estado: string }) => order.estado === "entregado");
 
   const openModal = (order: any) => {
     // Mapeamos los productos en la orden para agregarles detalles

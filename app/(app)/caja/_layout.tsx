@@ -4,7 +4,24 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function CajaLayout() {
   return (
-    <Tabs screenOptions={{tabBarStyle: {backgroundColor: "#FBB03B" } ,tabBarActiveTintColor: "#FFF",  tabBarInactiveTintColor: "#000"}}
+    <Tabs screenOptions={{
+      tabBarStyle: {
+        backgroundColor: "#fff",
+        height: 70,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingTop: 10,
+        shadowColor: "#FBB03B",
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 10, height: 4 },
+        shadowRadius: 9,
+        borderColor: "#FBB03B",
+      },
+      tabBarShowLabel: false,
+      tabBarActiveTintColor: "#FBB03B",
+      tabBarInactiveTintColor: "#aaa",
+      headerShown: false,
+    }}
     >
 
       <Tabs.Screen

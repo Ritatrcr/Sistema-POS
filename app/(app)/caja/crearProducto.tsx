@@ -29,7 +29,7 @@ export default function CrearNuevoProducto() {
       nombre: nombre || "sin información",
       categoria: selectedCategory || "sin información",
       descripcion: descripcion || "sin información",
-      tiempoPreparacion: tiempoPreparacion || "sin información",
+      tiempoPreparacion: selectedTime || "sin información",
       ingredientes: ingredientes || "sin información",
       procedimiento: procedimiento || "sin información",
       precio: precio || "0",
