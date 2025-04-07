@@ -96,7 +96,7 @@ export default function CrearNuevoProducto() {
           <TouchableOpacity style={[styles.timeButton, selectedTime === '30 min' && styles.selectedButton]} onPress={() => setSelectedTime('30 min')}>
             <Text style={styles.timeText}>30 min</Text>
           </TouchableOpacity>
-          <TextInput style={styles.input} placeholder="Otro" value={tiempoPreparacion} onChangeText={setTiempoPreparacion} />
+          <TextInput style={styles.input} placeholder="Otro" value={tiempoPreparacion} onChangeText={setSelectedTime} />
         </View>
 
         <TextInput style={styles.input} placeholder="Ingredientes" multiline value={ingredientes} onChangeText={setIngredientes} />
