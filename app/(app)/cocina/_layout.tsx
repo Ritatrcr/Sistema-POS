@@ -32,22 +32,25 @@ export default function CocinaLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="recetas"
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="qr-code-outline" color={color} size={26} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="ordenes"
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="help-circle-outline" color={color} size={26} />
-          ),
-        }}
-      />
+      import { Ionicons } from '@expo/vector-icons';
+
+<Tabs.Screen
+  name="recetas"
+  options={{
+    tabBarIcon: ({ color }) => (
+      <Ionicons name="book-outline" color={color} size={26} />
+    ),
+  }}
+/>
+<Tabs.Screen
+  name="ordenes"
+  options={{
+    tabBarIcon: ({ color }) => (
+      <Ionicons name="restaurant-outline" color={color} size={26} />
+    ),
+  }}
+/>
+
       <Tabs.Screen
         name="perfil"
         options={{

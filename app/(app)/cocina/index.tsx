@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator, 
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useProduct } from "../../../context/productsContext/ProductsContext";
 import { Ionicons } from "@expo/vector-icons";
+
 const CocinaScreen = () => {
   const { orders, updateOrderStatus, fetchAllOrders } = useOrder();
   const { fetchProductById } = useProduct();
@@ -14,12 +15,17 @@ const CocinaScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("todos");
   const [viewOrders, setViewOrders] = useState(false);
+  const [orderedCount, setOrderedCount] = useState(0); // To track the number of "ordenado" orders
 
   useEffect(() => {
     setLoading(true);
     const sorted = [...orders].sort((a, b) => new Date(`${a.fechaRealizacion} ${a.horaRealizacion}`) - new Date(`${b.fechaRealizacion} ${b.horaRealizacion}`));
     setSortedOrders(sorted);
     setLoading(false);
+
+    // Count orders with status "ordenado"
+    const countOrdered = sorted.filter(order => order.estado === "ordenado").length;
+    setOrderedCount(countOrdered);
   }, [orders]);
 
   useEffect(() => {
@@ -86,7 +92,7 @@ const CocinaScreen = () => {
       )}
 
       <TouchableOpacity style={styles.detailsButton} onPress={() => handleOrderDetails(item)}>
-        <Ionicons name="eye-outline" color="#fff" size={24} />
+        <Ionicons name="eye-outline" color="#FBB03B" size={24} />
       </TouchableOpacity>
     </View>
   );
@@ -132,6 +138,11 @@ const CocinaScreen = () => {
           <TouchableOpacity key={estado} style={[styles.filterButton, selectedStatus === estado && styles.selectedFilterButton]} onPress={() => { setSelectedStatus(estado); setViewOrders(true); }}>
             <Ionicons name={estado === "todos" ? "list-outline" : estado === "ordenado" ? "clipboard-outline" : estado === "cocinando" ? "restaurant-outline" : estado === "Listo para recoger" ? "checkmark-circle-outline" : "checkmark-done-outline"} size={24} color="#fff" />
             <Text style={styles.filterButtonText}>{estado}</Text>
+            {estado === "ordenado" && orderedCount > 0 && (
+              <View style={styles.alertCircle}>
+                <Text style={styles.alertText}>{orderedCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
         ))}
       </View>
@@ -161,7 +172,6 @@ const CocinaScreen = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -177,19 +187,19 @@ const styles = StyleSheet.create({
   },
   filterButtonsContainer: {
     flexDirection: "row",
-    flexWrap: "wrap", // Permite que los botones se ajusten si hay más de 2 en la fila
+    flexWrap: "wrap",
     justifyContent: "space-between",
     marginBottom: 20,
   },
   filterButton: {
     backgroundColor: "#FBB03B",
-    width: "48%",  // Esto hace que cada botón ocupe el 48% del ancho, dejando espacio entre ellos
+    width: "48%",
     marginBottom: 10,
-    paddingVertical: 20,  // Aumenta el espacio vertical
+    paddingVertical: 20,
     borderRadius: 8,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "column", // Icono arriba y texto abajo
+    flexDirection: "column",
   },
   selectedFilterButton: {
     backgroundColor: "#E57E1B",
@@ -197,8 +207,25 @@ const styles = StyleSheet.create({
   filterButtonText: {
     color: "#fff",
     fontSize: 16,
-    marginTop: 5,  // Espacio entre el icono y el texto
+    marginTop: 5,
   },
+  alertCircle: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "#FF0000",
+    width: 30,
+    height: 30,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  alertText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+ 
   filterButtonIcon: {
     fontSize: 30, // Tamaño del icono
     color: "#fff",
@@ -253,7 +280,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    backgroundColor: "#FBB03B",
     borderRadius: 50,
     padding: 8,
   },
