@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
-import { useProduct } from "../../../context/productsContext/ProductsContext"; // Usar el contexto de productos
+import { useProduct } from "../context/productsContext/ProductsContext"; // Usar el contexto de productos
 import { Entypo } from "@expo/vector-icons";
-import CameraModal from "../../../components/cameramodal"; // Modal para seleccionar la imagen
+import CameraModal from "../components/cameramodal"; // Modal para seleccionar la imagen
 
 interface Product {
   id: string;
@@ -30,7 +30,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, setSelecte
   const [image, setImage] = useState<string | null>(product.imageUrl); // Para la imagen
   const [message, setMessage] = useState<string>("");
 
-  const { updateProduct } = useProduct();  // Usar el método de actualizar producto del contexto
+  const { updateProduct, deleteProduct } = useProduct();  // Usar el método de actualizar y eliminar productos del contexto
   const [isModalVisible, setIsModalVisible] = useState(false); // Para controlar la visibilidad del modal de la cámara
 
   const handleSave = async () => {
@@ -57,6 +57,16 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, setSelecte
     setIsModalVisible(false); // Cerrar el modal
   };
 
+  const handleDelete = async () => {
+    try {
+      await deleteProduct(product.id); // Eliminar el producto usando el contexto
+      setMessage("Producto eliminado");
+      setSelectedProduct(null); // Cierra el modal después de eliminar
+    } catch (error) {
+      console.error("Error al eliminar el producto: ", error);
+    }
+  };
+
   return (
     <Modal animationType="slide" transparent={true} visible={true}>
       <View style={styles.modalContainer}>
@@ -67,7 +77,6 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, setSelecte
           <TouchableOpacity
             style={styles.imageButton}
             onPress={() => setIsModalVisible(true)}
-            disabled={!!image} // Deshabilitar si ya hay una imagen seleccionada
           >
             {image ? (
               <Image source={{ uri: image }} style={styles.imagePreview} />
@@ -112,6 +121,12 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, setSelecte
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.saveButtonText}>Editar</Text>
           </TouchableOpacity>
+
+          {/* Botón de eliminar producto */}
+          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+            <Text style={styles.deleteButtonText}>Eliminar Producto</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.closeButton} onPress={() => setSelectedProduct(null)}>
             <Text style={styles.closeButtonText}>Cerrar</Text>
           </TouchableOpacity>
@@ -186,6 +201,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   saveButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  deleteButton: {
+    backgroundColor: "#FF4040",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  deleteButtonText: {
     color: "#fff",
     fontWeight: "600",
   },

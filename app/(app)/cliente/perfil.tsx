@@ -2,8 +2,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useAuth } from "../../../context/authContext/AuthContext";
+import { useAuth } from "../../../context/authContext/AuthContext"; // Importa el contexto de autenticación
 import { Ionicons } from '@expo/vector-icons';
+
 
 const Perfil = () => {
   const router = useRouter();
@@ -52,6 +53,8 @@ const Perfil = () => {
           <Text style={styles.optionTitle}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>
+
+     
     </View>
   );
 };
