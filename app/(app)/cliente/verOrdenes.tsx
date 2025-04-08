@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useAuth } from "../../../context/authContext/AuthContext";
 import { useProduct } from "../../../context/productsContext/ProductsContext";
 import { useFocusEffect } from "expo-router";
 import DetallesOrdenModal from "@/components/DetallesOrdenModal";
-
 
 const VerOrdenesCliente = () => {
   const { orders, fetchAllOrders } = useOrder();
@@ -19,7 +18,6 @@ const VerOrdenesCliente = () => {
       fetchAllOrders();
     }, [])
   );
-  
 
   if (!user) return <Text>No estás autenticado.</Text>;
 
@@ -151,7 +149,6 @@ const VerOrdenesCliente = () => {
         )}
       </ScrollView>
 
-    
       <DetallesOrdenModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
