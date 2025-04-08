@@ -12,11 +12,12 @@ export default function CrearNuevoProducto() {
   const [ingredientes, setIngredientes] = useState('');
   const [procedimiento, setProcedimiento] = useState('');
   const [precio, setPrecio] = useState('');
-  const [image, setImage] = useState<string | null>(null); // Para la imagen seleccionada
-  const [isModalVisible, setIsModalVisible] = useState(false); // Para controlar la visibilidad del modal
-  const [selectedCategory, setSelectedCategory] = useState(''); // Para controlar la categoría seleccionada
-  const [selectedTime, setSelectedTime] = useState(''); // Para controlar el tiempo de preparación seleccionado
-  const { createProduct } = useProduct(); // Usamos el contexto para crear el producto
+  const [image, setImage] = useState<string | null>(null); 
+  const [isModalVisible, setIsModalVisible] = useState(false); 
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); 
+  const { createProduct } = useProduct(); 
 
   const handleImageSelect = (uri: string) => {
     setImage(uri); // Guardar la imagen seleccionada
@@ -24,7 +25,7 @@ export default function CrearNuevoProducto() {
   };
 
   const handleSaveProduct = () => {
-    // Validar los campos y asignar "sin información" si están vacíos
+
     const productData = {
       nombre: nombre || "sin información",
       categoria: selectedCategory || "sin información",
@@ -45,13 +46,30 @@ export default function CrearNuevoProducto() {
       createProduct(productData, ""); // Pasar una cadena vacía si no hay imagen
     }
 
-    console.log("Producto guardado:", productData); // Para depuración
+    setSuccessMessage('Producto creado con éxito!');
+    resetForm();
+  };
+
+  const resetForm = () => {
+    // Limpiar los campos del formulario
+    setNombre('');
+    setCategoria('');
+    setDescripcion('');
+    setTiempoPreparacion('');
+    setIngredientes('');
+    setProcedimiento('');
+    setPrecio('');
+    setImage(null);
+    setSelectedCategory('');
+    setSelectedTime('');
   };
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.mainContent}>
         <Text style={styles.title}>Crea un nuevo producto</Text>
+
+        {successMessage ? <Text style={styles.successMessage}>{successMessage}</Text> : null}
 
         <TouchableOpacity
           style={styles.imageButton}
@@ -109,7 +127,6 @@ export default function CrearNuevoProducto() {
       </ScrollView>
 
       <CameraModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} setImage={handleImageSelect} />
-    
     </View>
   );
 }
@@ -118,6 +135,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   mainContent: { flex: 1 },
   title: { textAlign:'center',marginTop:50,paddingLeft: 20, paddingTop: 20, fontSize: 28, fontWeight: '600', color: '#333', marginBottom: 20 },
+  successMessage: { textAlign: 'center', color: 'green', fontSize: 18, fontWeight: '600', marginBottom: 20 },
   imageButton: { marginLeft: 'auto', marginRight: 'auto', width: 200, height: 200, backgroundColor: '#FBB03B', padding: 5, borderRadius: 150, alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
   imageButtonText: { marginTop: 10, fontSize: 16, color: '#333' },
   imagePreview: { width: '100%', height: '100%', borderRadius: 150, resizeMode: 'cover' },
