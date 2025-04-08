@@ -30,6 +30,8 @@ const ProductListScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Lista de Productos</Text>
+      {/* FlatList para mostrar la lista de productos */}
       <FlatList
         data={products}
         renderItem={renderProductItem}

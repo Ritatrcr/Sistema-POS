@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator, Modal } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator, Modal, Image } from "react-native";
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useProduct } from "../../../context/productsContext/ProductsContext";
 import { Ionicons } from "@expo/vector-icons";
@@ -105,19 +105,33 @@ const CocinaScreen = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.detailsContainer}>
             <Text style={styles.detailsTitle}>Detalles de la orden</Text>
+            
+            {/* Mostrar el card para cada producto */}
             {selectedOrder.producto.map((producto, index) => (
               <View key={index} style={styles.productCard}>
-                <Text style={styles.productName}> {producto.cantidad}-{productsNames[producto.idProducto] || "Sin nombre"}</Text>
+                <Image
+                  source={{ uri: producto.imageUrl }}  // Asegúrate de que el producto tenga una propiedad 'imageUrl'
+                  style={styles.productImage}
+                />
+                <View style={styles.productInfo}>
+                  <Text style={styles.productName}>{productsNames[producto.idProducto] || "Sin nombre"}</Text>
+                  <Text style={styles.productQuantity}>Cantidad: {producto.cantidad}</Text>
+                </View>
               </View>
             ))}
-            
+           <Text style={styles.orderStatus}>
+              Estado: <Text style={[styles.statusText, { color: '#FBB03B', fontWeight: 'bold' }]}>
+                {selectedOrder.estado}
+              </Text>
+            </Text>
+
             <View style={styles.processContainer}>
               {["ordenado", "cocinando", "Listo para recoger", "entregado"].map((estado, index) => (
                 <View key={estado} style={styles.processStep}>
+                 
                   <View style={[styles.circle, selectedOrder.estado === estado ? styles.activeCircle : null]}>
                     <Text style={styles.circleText}>{index + 1}</Text>
                   </View>
-                  <Text style={styles.processText}>{estado}</Text>
                 </View>
               ))}
             </View>
@@ -127,7 +141,8 @@ const CocinaScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </Modal>      
+
     );
   };
 
@@ -298,7 +313,7 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     marginTop: 20,
-    padding: 20,
+    padding: 30,
     backgroundColor: "#FFF",
     borderRadius: 8,
     borderColor: "#EAEAEA",
@@ -311,7 +326,14 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   productCard: {
-    marginBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+    borderColor: "#EAEAEA",
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+
   },
   productName: {
     fontSize: 16,
@@ -380,7 +402,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 10, // Espacio entre el ID y el tag "Nuevo"
   },
+ 
   
-});
+    productImage: {
+      width: 50,
+      height: 50,
+      borderRadius: 8,
+      marginRight: 15,
+    },
+    productInfo: {
+      padding: 10,
+    },
+  
+    productQuantity: {
+      fontSize: 14,
+      color: "#666",
+    },
+ 
+  
+   
+  });
+  
 
 export default CocinaScreen;
