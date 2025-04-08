@@ -50,6 +50,7 @@ const HomeScreen: React.FC = () => {
 
   const renderItem = (item: Product) => {
     return (
+      
       <TouchableOpacity onPress={() => setSelectedProduct(item)} style={styles.card}>
         <Image source={{ uri: item.imageUrl }} style={styles.foodImage} />
         <View style={styles.cardInfo}>
@@ -63,6 +64,7 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.titulo}>Edita o elimina tus productos</Text>
       <TextInput
         style={styles.searchInput}
         placeholder="Escribe para buscar"
@@ -121,101 +123,24 @@ const HomeScreen: React.FC = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
-    paddingTop: 40,
-  },
-  searchInput: {
-    backgroundColor: "#F0F0F0",
-    borderRadius: 12,
-    padding: 10,
-    marginTop: 15,
-    fontSize: 16,
-  },
-  categories: {
-    marginTop: 20,
-    marginBottom:40,
-    paddingLeft: 10,
-    paddingRight: 10,
-    alignContent: "center",
-    height: 100,
-    maxHeight: 40,
-   
-  },
-  categoryButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    marginRight: 10,
-    minHeight: 40,
-   
-    borderWidth: 1,
-    borderColor: "#FBB03B",
-
-  },
-  categoryButtonSelected: {
-    backgroundColor: "#FBB03B",
-  },
-  categoryButtonUnselected: {
-    backgroundColor: "transparent",
-  },
-  categoryText: {
-    marginBottom: 30,
-    fontWeight: "600",
-    fontSize: 16,
-
-  },
-  categoryTextSelected: {
-    color: "#fff",
-  },
-  categoryTextUnselected: {
-    color: "#aaa",
-  },
-  foodSection: {
-    marginBottom: 40,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 15,
-  },
-  productsContainer: {
-    marginTop: 10,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  card: {
-    width: width * 0.20, // El 45% del ancho de la pantalla para que se acomode en 2 columnas
-    marginBottom: 15,
-    borderRadius: 15,
-    backgroundColor: "#F8F8F8",
-    position: "relative",
-    padding: 10,
-  },
-  foodImage: {
-    width: "100%",
-    height: 120,
-    borderRadius: 10,
-  },
-  cardInfo: {
-    paddingTop: 10,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-  },
-  itemDetails: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 5,
-  },
+  container: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 20, paddingTop: 40 },
+  titulo: { fontSize: 28, fontWeight: "600", color: "#333", marginBottom: 20 },
+  searchInput: { backgroundColor: "#F0F0F0", borderRadius: 12, padding: 10, marginTop: 15, fontSize: 16 },
+  categories: { marginTop: 20, marginBottom: 40, paddingLeft: 10, paddingRight: 10, alignContent: "center", height: 100, maxHeight: 40 },
+  categoryButton: { paddingVertical: 8, paddingHorizontal: 16, borderRadius: 20, marginRight: 10, minHeight: 40, borderWidth: 1, borderColor: "#FBB03B" },
+  categoryButtonSelected: { backgroundColor: "#FBB03B" },
+  categoryButtonUnselected: { backgroundColor: "transparent" },
+  categoryText: { marginBottom: 30, fontWeight: "600", fontSize: 16 },
+  categoryTextSelected: { color: "#fff" },
+  categoryTextUnselected: { color: "#aaa" },
+  foodSection: { marginBottom: 40 },
+  sectionTitle: { fontSize: 22, fontWeight: "600", color: "#333", marginBottom: 15 },
+  productsContainer: { marginTop: 10, flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },
+  card: { width: width * 0.20, marginBottom: 15, borderRadius: 15, backgroundColor: "#F8F8F8", position: "relative", padding: 10 },
+  foodImage: { width: "100%", height: 120, borderRadius: 10 },
+  cardInfo: { paddingTop: 10 },
+  itemName: { fontSize: 16, fontWeight: "600", color: "#333" },
+  itemDetails: { fontSize: 14, color: "#666", marginTop: 5 },
 });
-
 export default HomeScreen;
