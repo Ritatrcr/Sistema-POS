@@ -435,6 +435,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 24,
     fontWeight: "600",
+    top: -2,
   },
   viewCartButton: {
     backgroundColor: "#ff8403",
