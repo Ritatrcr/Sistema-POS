@@ -6,7 +6,7 @@ import { useAuth } from "../../../context/authContext/AuthContext";
 import { Alert } from "react-native";
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 
 
 
@@ -164,8 +164,8 @@ const HomeScreen: React.FC = () => {
         <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40 }}>
          
           <View style={styles.cartHeader}>
-            <TouchableOpacity onPress={() => setShowCart(false)} style={styles.backButton}>
-              <Text style={styles.backButtonIcon}>←</Text>
+          <TouchableOpacity onPress={() => setShowCart(false)} style={styles.backButton}>
+              <AntDesign name="leftcircleo" size={24} color="black" />
             </TouchableOpacity>
             <Text style={styles.sectionTitle}>Tu Carrito</Text>
           </View>
@@ -193,7 +193,7 @@ const HomeScreen: React.FC = () => {
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={() => removeFromCart(index)} style={styles.trashButton}>
-                          <Text style={styles.trashButtonText}>🗑️</Text>
+                          <Ionicons name="trash-bin-outline" size={24} color="black" /> {/* Ícono de papelera */}
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -207,9 +207,8 @@ const HomeScreen: React.FC = () => {
 
           {cart.length > 0 && (
             <View style={styles.fixedOrderButtonContainer}>
-            <Text style={styles.totalText}>Total: ${calcularTotal()}</Text>
             <TouchableOpacity style={styles.orderButton} onPress={confirmarOrden}>
-              <Text style={styles.orderButtonText}>Ordenar</Text>
+              <Text style={styles.orderButtonText}>Ordenar ${calcularTotal()}</Text>
             </TouchableOpacity>
           </View>
           
@@ -436,6 +435,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 24,
     fontWeight: "600",
+    top: -2,
   },
   viewCartButton: {
     backgroundColor: "#ff8403",
@@ -554,6 +554,7 @@ const styles = StyleSheet.create({
   backButton: {
     marginRight: 10,
     padding: 10,
+    top:-5,
   },
   backButtonIcon: {
     fontSize: 22,
@@ -600,6 +601,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+    borderRadius: 20,
+    
+
   },
   
   totalText: {
