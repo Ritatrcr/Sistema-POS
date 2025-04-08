@@ -14,18 +14,12 @@ const CocinaScreen = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("todos");
-  const [viewOrders, setViewOrders] = useState(false);
-  const [orderedCount, setOrderedCount] = useState(0); // To track the number of "ordenado" orders
 
   useEffect(() => {
     setLoading(true);
     const sorted = [...orders].sort((a, b) => new Date(`${a.fechaRealizacion} ${a.horaRealizacion}`) - new Date(`${b.fechaRealizacion} ${b.horaRealizacion}`));
     setSortedOrders(sorted);
     setLoading(false);
-
-    // Count orders with status "ordenado"
-    const countOrdered = sorted.filter(order => order.estado === "ordenado").length;
-    setOrderedCount(countOrdered);
   }, [orders]);
 
   useEffect(() => {
@@ -62,40 +56,47 @@ const CocinaScreen = () => {
     setSelectedOrder(null);
   };
 
-  const renderOrderItem = ({ item }) => (
-    <View style={[styles.orderCard, item.estado === "ordenado" ? styles.newOrder : null]}>
-      <Text style={styles.orderTitle}>Orden ID: {item.id}</Text>
-      <Text style={styles.orderDate}>Fecha: {item.fechaRealizacion}</Text>
-      <Text style={styles.orderTime}>Hora: {item.horaRealizacion}</Text>
-      
-      {item.producto.map((producto, index) => {
-        getProductName(producto.idProducto);
-        return <Text key={index} style={styles.productText}>{productsNames[producto.idProducto] || "Sin nombre"} - Cantidad: {producto.cantidad}</Text>;
-      })}
+  const renderOrderItem = ({ item }) => {
+    const index = sortedOrders.findIndex((order) => order.id === item.id);
+    return (
+      <View style={[styles.orderCard, item.estado === "ordenado" ? styles.newOrder : null]}>
+        <View style={styles.orderHeader}>
+          <Text style={styles.orderTitle}>Orden ID: {index + 1}</Text>
+          {item.estado === "ordenado" && <Text style={styles.newTag}>NUEVO</Text>}
+        </View>
 
-      <Text style={styles.orderStatus}>Estado: {item.estado}</Text>
+        <Text style={styles.orderDate}>Fecha: {item.fechaRealizacion}</Text>
+        <Text style={styles.orderTime}>Hora: {item.horaRealizacion}</Text>
+        
+        {item.producto.map((producto, index) => {
+          getProductName(producto.idProducto);
+          return <Text key={index} style={styles.productText}>{producto.cantidad}-{productsNames[producto.idProducto] || "Sin nombre"}  </Text>;
+        })}
 
-      {item.estado === "ordenado" && (
-        <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "cocinando")}>
-          <Text style={styles.buttonText}>Comenzar a cocinar</Text>
-        </TouchableOpacity>
-      )}
-      {item.estado === "cocinando" && (
-        <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "Listo para recoger")}>
-          <Text style={styles.buttonText}>Listo para recoger</Text>
-        </TouchableOpacity>
-      )}
-      {item.estado === "Listo para recoger" && (
-        <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "entregado")}>
-          <Text style={styles.buttonText}>Entregar</Text>
-        </TouchableOpacity>
-      )}
+        <Text style={styles.orderStatus}>Estado: {item.estado}</Text>
 
-      <TouchableOpacity style={styles.detailsButton} onPress={() => handleOrderDetails(item)}>
-        <Ionicons name="eye-outline" color="#FBB03B" size={24} />
-      </TouchableOpacity>
-    </View>
-  );
+        {item.estado === "ordenado" && (
+          <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "cocinando")}>
+            <Text style={styles.buttonText}>Comenzar a cocinar</Text>
+          </TouchableOpacity>
+        )}
+        {item.estado === "cocinando" && (
+          <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "Listo para recoger")}>
+            <Text style={styles.buttonText}>Listo para recoger</Text>
+          </TouchableOpacity>
+        )}
+        {item.estado === "Listo para recoger" && (
+          <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "entregado")}>
+            <Text style={styles.buttonText}>Entregar</Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity style={styles.detailsButton} onPress={() => handleOrderDetails(item)}>
+          <Ionicons name="eye-outline" color="#FBB03B" size={24} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   const renderOrderDetails = () => {
     if (!selectedOrder) return null;
@@ -106,8 +107,7 @@ const CocinaScreen = () => {
             <Text style={styles.detailsTitle}>Detalles de la orden</Text>
             {selectedOrder.producto.map((producto, index) => (
               <View key={index} style={styles.productCard}>
-                <Text style={styles.productName}>{productsNames[producto.idProducto] || "Sin nombre"}</Text>
-                <Text>Cantidad: {producto.cantidad}</Text>
+                <Text style={styles.productName}> {producto.cantidad}-{productsNames[producto.idProducto] || "Sin nombre"}</Text>
               </View>
             ))}
             
@@ -131,47 +131,56 @@ const CocinaScreen = () => {
     );
   };
 
-  const renderButtonsState = () => {
+  const renderFilter = () => {
     return (
-      <View style={styles.filterButtonsContainer}>
-        {["todos", "ordenado", "cocinando", "Listo para recoger", "entregado"].map((estado) => (
-          <TouchableOpacity key={estado} style={[styles.filterButton, selectedStatus === estado && styles.selectedFilterButton]} onPress={() => { setSelectedStatus(estado); setViewOrders(true); }}>
-            <Ionicons name={estado === "todos" ? "list-outline" : estado === "ordenado" ? "clipboard-outline" : estado === "cocinando" ? "restaurant-outline" : estado === "Listo para recoger" ? "checkmark-circle-outline" : "checkmark-done-outline"} size={24} color="#fff" />
-            <Text style={styles.filterButtonText}>{estado}</Text>
-            {estado === "ordenado" && orderedCount > 0 && (
-              <View style={styles.alertCircle}>
-                <Text style={styles.alertText}>{orderedCount}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
-  };
-
-  const renderOrdersByState = () => {
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.backButton} onPress={() => setViewOrders(false)}>
-          <Ionicons name="arrow-back-outline" size={24} color="#080808" />
-        </TouchableOpacity>
-        <Text style={styles.title}>{selectedStatus}</Text>
-        {loading ? (
-          <ActivityIndicator size="large" color="#FBB03B" />
-        ) : (
-          <FlatList data={filteredOrders} renderItem={renderOrderItem} keyExtractor={(item) => item.id} />
-        )}
+      <View style={styles.filterContainer}>
+        {["todos", "ordenado", "cocinando", "Listo para recoger", "entregado"].map((status, index) => {
+          const isSelected = selectedStatus === status;
+          return (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.filterButton,
+                isSelected ? styles.filterButtonSelected : styles.filterButtonUnselected,
+              ]}
+              onPress={() => setSelectedStatus(status)}
+            >
+              <Text
+                style={[
+                  styles.filterText,
+                  isSelected ? styles.filterTextSelected : styles.filterTextUnselected,
+                ]}
+              >
+                {status === "todos" ? "Todas" : status}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     );
   };
 
   return (
+    
     <View style={styles.container}>
-      {!viewOrders ? renderButtonsState() : renderOrdersByState()}
+          <Text style={styles.title}>Ordenes</Text>
+
+      {renderFilter()}
+      {loading ? (
+        <ActivityIndicator size="large" color="#FBB03B" />
+      ) : (
+        <FlatList
+          data={filteredOrders}
+          renderItem={renderOrderItem}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
       {renderOrderDetails()}
     </View>
   );
 };
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -185,35 +194,39 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: "center",
   },
-  filterButtonsContainer: {
+   filterContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
     justifyContent: "space-between",
     marginBottom: 20,
   },
   filterButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    marginRight: 10,
+    backgroundColor: "transparent",
+  },
+  filterButtonSelected: {
     backgroundColor: "#FBB03B",
-    width: "48%",
-    marginBottom: 10,
-    paddingVertical: 20,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
   },
-  selectedFilterButton: {
-    backgroundColor: "#E57E1B",
+  filterButtonUnselected: {
+    backgroundColor: "transparent",
   },
-  filterButtonText: {
-    color: "#fff",
+  filterText: {
     fontSize: 16,
-    marginTop: 5,
+    fontWeight: "600",
+  },
+  filterTextSelected: {
+    color: "#fff",
+  },
+  filterTextUnselected: {
+    color: "#aaa",
   },
   alertCircle: {
     position: "absolute",
     top: -5,
     right: -5,
-    backgroundColor: "#FF0000",
+    backgroundColor: "#90EE90",
     width: 30,
     height: 30,
     borderRadius: 30,
@@ -221,7 +234,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   alertText: {
-    color: "#fff",
+    color: "#000000",
     fontSize: 12,
     fontWeight: "600",
   },
@@ -351,6 +364,23 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontWeight: "600",
   },
+  orderHeader: {
+    flexDirection: 'row', // Alinear horizontalmente
+    alignItems: 'center', // Centrar verticalmente
+  },
+
+
+  newTag: {
+    backgroundColor: "#90EE90", // Color verde claro
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: 12,
+    marginLeft: 10, // Espacio entre el ID y el tag "Nuevo"
+  },
+  
 });
 
 export default CocinaScreen;
