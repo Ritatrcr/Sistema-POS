@@ -62,9 +62,10 @@ const VerOrdenesCliente = () => {
   };
 
   return (
+    
     <View style={styles.wrapper}>
+              <Text style={styles.title}>Orden En Curso</Text>
       <ScrollView style={styles.container}>
-        <Text style={styles.title}>Orden En Curso</Text>
         {ordenesActivas.map((orden: any, idx: number) => {
           const { color, icon } = getEstadoEstilo(orden.estado);
           return (
@@ -172,6 +173,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     marginTop: 20,
+    textAlign: "center",
   },
   card: {
     backgroundColor: "#f2f2f2",
