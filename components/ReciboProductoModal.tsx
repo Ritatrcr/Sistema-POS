@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, ScrollView, Text, View, TouchableOpacity, StyleSheet, Image } from 'react-native';
-
+import { useRecibo } from '@/context/reciboContext/ReciboContext';
 interface Product {
   imageUrl: string;
   nombre: string;
@@ -35,6 +35,7 @@ const ReciboProductoModal: React.FC<DetallesOrdenModalProps> = ({ modalVisible, 
     setModalVisible(false); // Cierra el modal de recibo
     setPageUpdated(); // Actualiza la página
   };
+  
 
   return (
     <Modal visible={modalVisible} animationType="slide" onRequestClose={handleClose}>
@@ -59,9 +60,12 @@ const ReciboProductoModal: React.FC<DetallesOrdenModalProps> = ({ modalVisible, 
             ))}
             <Text style={styles.bold}>Subtotal:</Text> <Text>${selectedOrder.precioTotal}</Text>
             <Text style={styles.bold}>Impuesto (19%):</Text> <Text>${impuesto}</Text>
-            <Text style={styles.bold}>Total:</Text> <Text>${total}</Text>
+            <Text style={styles.bold}>Total: COP</Text> <Text>${total}</Text>
           </View>
         )}
+        <TouchableOpacity onPress={handleClose} style={styles.guardarButton}>
+          <Text style={{ color: 'white' }}>Guardar</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
           <Text style={{ color: 'white' }}>Cerrar Recibo</Text>
         </TouchableOpacity>
@@ -72,12 +76,16 @@ const ReciboProductoModal: React.FC<DetallesOrdenModalProps> = ({ modalVisible, 
 
 const styles = StyleSheet.create({
   modalContent: {
+    marginTop: "10%",
+    marginLeft: "15%",
+    marginRight: "15%",
+    
     flex: 1,
     padding: 20,
     backgroundColor: 'white',
   },
   modalTitle: {
-    fontSize: 20,
+    
     fontWeight: 'bold',
     marginBottom: 15,
   },
@@ -102,7 +110,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-  },
+  },guardarButton:{
+    marginTop: 20,
+    backgroundColor: 'green',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  }
 });
 
 export default ReciboProductoModal;
