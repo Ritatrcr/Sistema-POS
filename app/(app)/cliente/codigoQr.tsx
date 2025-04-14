@@ -1,67 +1,125 @@
-// app/codigoQr.tsx
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { Button, Text, View, StyleSheet } from 'react-native';
+import { useOrder } from '../../../context/orderContext/OrderContext'; // Importamos el hook del contexto
 
+export default function App() {
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [permission, requestPermission] = useCameraPermissions();
+  const [qr, setQr] = useState('');
+  const [scanned, setScanned] = useState(false);
 
-const CodigoQr = () => {
+  // Accedemos a las funciones de la base de datos a través del contexto
+  const { createOrder } = useOrder(); 
+
+  const handleQrScanned = ({ data }: { data: string }) => {
+    if (!scanned) {
+      setQr(data);
+      setScanned(true);
+      console.log('QR Scanned:', data);
+    }
+  };
+
+  if (!permission) {
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="Grant permission" />
+      </View>
+    );
+  }
+
+  const handleSaveTable = async () => {
+    if (qr) {
+      // Suponemos que el ID de la mesa es el valor del QR
+      const orderData = {
+        producto: [],
+        precioTotal: 0,
+        estado: "ordenado", // Estado inicial de la mesa
+        userId: "123", // ID de usuario de ejemplo, reemplazar por el real
+        fechaRealizacion: new Date().toLocaleDateString(),
+        horaRealizacion: new Date().toLocaleTimeString(),
+      };
+
+      await createOrder(orderData); // Guardamos la mesa
+      console.log("Mesa guardada en la base de datos.");
+    }
+  };
+
   return (
-   
     <View style={styles.container}>
-      <Text style={styles.title}>Pizza Casera</Text>
-      <Text style={styles.subtitle}>Scan your QR Code</Text>
-      
-      <Image 
-        source={{ uri: 'https://via.placeholder.com/150' }} 
-        style={styles.qrCode} 
+      <CameraView
+        style={styles.camera}
+        facing={facing}
+        barcodeScannerSettings={{
+          barcodeTypes: ['qr'],
+        }}
+        onBarcodeScanned={handleQrScanned}
       />
-      
-      <TouchableOpacity style={styles.scanButton}>
-        <MaterialIcons name="qr-code-scanner" size={40} color="#fff" />
-        <Text style={styles.scanText}>Scan QR Code</Text>
-      </TouchableOpacity>
 
+      {qr ? (
+        <View style={styles.qrInfo}>
+          <Text style={styles.qrText}>Estas sentado en la mesa: {qr}</Text>
+          <Button
+            title="Scan Again"
+            onPress={() => {
+              setQr('');
+              setScanned(false);
+            }}
+          />
+          <Button
+            title="Save Table"
+            onPress={handleSaveTable} // Llamamos a la función para guardar la mesa
+          />
+          <Button
+            title="Go to Menu"
+            onPress={() => {
+              router.push({
+                pathname: '/cliente',
+                params: { qr },
+              });
+            }}
+          />
+        </View>
+      ) : null}
     </View>
-    
   );
-};
-
-export default CodigoQr;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FBB03B',
     padding: 20,
-    backgroundColor: "#FBB03B",
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  subtitle: {
+  text: {
     fontSize: 18,
-    color: "#fff",
-    marginVertical: 10,
+    color: '#fff',
+    marginBottom: 10,
   },
-  qrCode: {
-    width: 250,
-    height: 250,
-    marginVertical: 20,
+  camera: {
+    width: '50%',
+    height: '50%',
+    borderRadius: 20, 
+    position: 'absolute',
   },
-  scanButton: {
-    backgroundColor: "#333",
-    padding: 10,
-    borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  qrInfo: {
+    position: 'absolute',
+    bottom: 100,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
   },
-  scanText: {
-    color: "#fff",
+  qrText: {
     fontSize: 18,
-    marginLeft: 10,
+    color: 'white',
+    marginBottom: 10,
   },
 });
