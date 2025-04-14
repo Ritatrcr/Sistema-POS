@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { db } from "../../utils/FirebaseConfig";
-import { collection, doc, setDoc, getDoc, getDocs, updateDoc, DocumentData } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, getDocs, updateDoc, DocumentData, onSnapshot } from "firebase/firestore";
 
 // Tipo de orden
 interface Order {
@@ -49,17 +49,16 @@ export const OrderProvider: React.FC<React.PropsWithChildren<{}>> = ({ children 
   
 
   // Obtener todas las órdenes
-  const fetchAllOrders = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "ordenes"));
+  const fetchAllOrders = () => {
+    const ordersCollection = collection(db, "ordenes");
+  
+    onSnapshot(ordersCollection, (querySnapshot) => {
       const ordersList: Order[] = [];
       querySnapshot.forEach((doc) => {
         ordersList.push({ id: doc.id, ...doc.data() } as Order);
       });
-      setOrders(ordersList);
-    } catch (error) {
-      console.error("Error al obtener órdenes: ", error);
-    }
+      setOrders(ordersList); // Actualiza el estado con las órdenes en tiempo real
+    });
   };
 
   const setHoraFinalizacion = async (orderId: string) => {
@@ -92,19 +91,17 @@ export const OrderProvider: React.FC<React.PropsWithChildren<{}>> = ({ children 
 
   return (
     <OrderContext.Provider
-    value={{
-      orders,
-      createOrder,
-      fetchAllOrders,
-      updateOrderStatus,
-      setHoraFinalizacion, // 👈
-    }}
-  >
-  
+      value={{
+        orders,
+        createOrder,
+        fetchAllOrders,
+        updateOrderStatus,
+        setHoraFinalizacion, 
+      }}
+    >
       {children}
     </OrderContext.Provider>
   );
 };
-
 // Hook para usarlo fácilmente
 export const useOrder = () => useContext(OrderContext);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator, Modal, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, ActivityIndicator, Modal, Image, ScrollView } from "react-native";
 import { useOrder } from "../../../context/orderContext/OrderContext";
 import { useProduct } from "../../../context/productsContext/ProductsContext";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,6 +14,7 @@ const CocinaScreen = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("todos");
+  const [timePassed, setTimePassed] = useState({}); // Estado para guardar el tiempo transcurrido
 
   useEffect(() => {
     setLoading(true);
@@ -29,6 +30,21 @@ const CocinaScreen = () => {
       setFilteredOrders(sortedOrders.filter(order => order.estado === selectedStatus));
     }
   }, [selectedStatus, sortedOrders]);
+
+  useEffect(() => {
+    // Configuración de setInterval para actualizar el tiempo pasado
+    const interval = setInterval(() => {
+      const updatedTimes = {};
+      sortedOrders.forEach(order => {
+        const minutesPassed = calculateTimePassed(order.horaRealizacion);
+        updatedTimes[order.id] = minutesPassed;
+      });
+      setTimePassed(updatedTimes);
+    }, 60000); // Actualizar cada minuto
+
+    // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(interval);
+  }, [sortedOrders]);
 
   const getProductName = async (idProducto) => {
     if (!productsNames[idProducto]) {
@@ -56,8 +72,40 @@ const CocinaScreen = () => {
     setSelectedOrder(null);
   };
 
+  const getMaxPreparationTime = (productos) => {
+    let maxTime = 0;
+    productos.forEach(producto => {
+      if (producto.tiempoPreparacion > maxTime) {
+        maxTime = producto.tiempoPreparacion;
+      }
+    });
+    return maxTime;
+  };
+
+  const calculateTimePassed = (orderTime) => {
+    const orderTimeParts = orderTime.split(":"); // Suponiendo que la hora está en formato HH:mm
+    const orderHours = parseInt(orderTimeParts[0], 10);
+    const orderMinutes = parseInt(orderTimeParts[1], 10);
+
+    const currentTime = new Date();
+    const currentHours = currentTime.getHours();
+    const currentMinutes = currentTime.getMinutes();
+
+    // Convertir ambas horas a minutos totales para simplificar la diferencia
+    const orderTotalMinutes = orderHours * 60 + orderMinutes;
+    const currentTotalMinutes = currentHours * 60 + currentMinutes;
+
+    // Calcular la diferencia en minutos
+    const timeDifference = currentTotalMinutes - orderTotalMinutes - 720;
+    return timeDifference >= 0 ? timeDifference : 0; // Si la diferencia es negativa, se devuelve 0
+  };
+
   const renderOrderItem = ({ item }) => {
     const index = sortedOrders.findIndex((order) => order.id === item.id);
+
+    // Obtener los minutos transcurridos desde la hora de la orden
+    const minutesPassed = timePassed[item.id] || calculateTimePassed(item.horaRealizacion);
+
     return (
       <View style={[styles.orderCard, item.estado === "ordenado" ? styles.newOrder : null]}>
         <View style={styles.orderHeader}>
@@ -67,13 +115,14 @@ const CocinaScreen = () => {
 
         <Text style={styles.orderDate}>Fecha: {item.fechaRealizacion}</Text>
         <Text style={styles.orderTime}>Hora: {item.horaRealizacion}</Text>
-        
+
         {item.producto.map((producto, index) => {
           getProductName(producto.idProducto);
-          return <Text key={index} style={styles.productText}>{producto.cantidad}-{productsNames[producto.idProducto] || "Sin nombre"}  </Text>;
+          return <Text key={index} style={styles.productText}>{producto.cantidad}-{productsNames[producto.idProducto] || "Sin nombre"}</Text>;
         })}
 
         <Text style={styles.orderStatus}>Estado: {item.estado}</Text>
+        <Text style={styles.orderStatus}>Tiempo transcurrido: {minutesPassed} minutos</Text> {/* Mostrar los minutos pasados */}
 
         {item.estado === "ordenado" && (
           <TouchableOpacity style={styles.button} onPress={() => handleOrderStatusChange(item.id, "cocinando")}>
@@ -105,7 +154,7 @@ const CocinaScreen = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.detailsContainer}>
             <Text style={styles.detailsTitle}>Detalles de la orden</Text>
-            
+
             {/* Mostrar el card para cada producto */}
             {selectedOrder.producto.map((producto, index) => (
               <View key={index} style={styles.productCard}>
@@ -119,7 +168,7 @@ const CocinaScreen = () => {
                 </View>
               </View>
             ))}
-           <Text style={styles.orderStatus}>
+            <Text style={styles.orderStatus}>
               Estado: <Text style={[styles.statusText, { color: '#FBB03B', fontWeight: 'bold' }]}>
                 {selectedOrder.estado}
               </Text>
@@ -128,7 +177,6 @@ const CocinaScreen = () => {
             <View style={styles.processContainer}>
               {["ordenado", "cocinando", "Listo para recoger", "entregado"].map((estado, index) => (
                 <View key={estado} style={styles.processStep}>
-                 
                   <View style={[styles.circle, selectedOrder.estado === estado ? styles.activeCircle : null]}>
                     <Text style={styles.circleText}>{index + 1}</Text>
                   </View>
@@ -141,45 +189,44 @@ const CocinaScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>      
-
+      </Modal>
     );
   };
 
   const renderFilter = () => {
     return (
       <View style={styles.filterContainer}>
-        {["todos", "ordenado", "cocinando", "Listo para recoger", "entregado"].map((status, index) => {
-          const isSelected = selectedStatus === status;
-          return (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.filterButton,
-                isSelected ? styles.filterButtonSelected : styles.filterButtonUnselected,
-              ]}
-              onPress={() => setSelectedStatus(status)}
-            >
-              <Text
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          {["todos", "ordenado", "cocinando", "Listo para recoger", "entregado"].map((status, index) => {
+            const isSelected = selectedStatus === status;
+            return (
+              <TouchableOpacity
+                key={index}
                 style={[
-                  styles.filterText,
-                  isSelected ? styles.filterTextSelected : styles.filterTextUnselected,
+                  styles.filterButton,
+                  isSelected ? styles.filterButtonSelected : styles.filterButtonUnselected,
                 ]}
+                onPress={() => setSelectedStatus(status)}
               >
-                {status === "todos" ? "Todas" : status}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+                <Text
+                  style={[
+                    styles.filterText,
+                    isSelected ? styles.filterTextSelected : styles.filterTextUnselected,
+                  ]}
+                >
+                  {status === "todos" ? "Todas" : status}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
     );
   };
 
   return (
-    
     <View style={styles.container}>
-          <Text style={styles.title}>Ordenes</Text>
-
+      <Text style={styles.title}>Ordenes</Text>
       {renderFilter()}
       {loading ? (
         <ActivityIndicator size="large" color="#FBB03B" />
@@ -206,6 +253,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     color: "#333",
+    marginTop: 50,
     marginBottom: 20,
     textAlign: "center",
   },
