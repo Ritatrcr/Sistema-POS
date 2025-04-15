@@ -1,50 +1,128 @@
-# Welcome to your Expo app 👋
+# 🥭🍽️ ManGusteau - Sistema de Restaurante Inteligente
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**ManGusteau** es una aplicación full stack diseñada para gestionar un restaurante de manera eficiente y moderna. Desarrollada con **React Native + Expo**, **Express**, **TypeScript** y **Firebase**, permite controlar pedidos, gestionar productos, administrar usuarios y visualizar reportes. Todo en tiempo real y con acceso segmentado por roles.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Tecnologías Principales
 
-   ```bash
-   npm install
-   ```
+- ⚛️ **Frontend:** React Native con Expo (para apps móviles)
+- 🔥 **Backend:** Node.js + Express (API REST)
+- 💬 **Base de Datos:** Firebase Firestore (NoSQL en tiempo real)
+- 📦 **Almacenamiento:** Firebase Storage (imágenes de productos)
+- 🛡️ **Autenticación:** Firebase Auth
+- 💻 **Lenguaje:** TypeScript en todo el stack
 
-2. Start the app
+---
 
-   ```bash
-    npx expo start
-   ```
+## 👥 Roles en el sistema
 
-In the output, you'll find options to open the app in a
+### 👤 Cliente
+- Escanea un código QR para identificarse en una mesa
+- Realiza pedidos desde el celular
+- Visualiza el estado de sus órdenes en tiempo real
+- Gestiona su perfil y PQRS
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 👨‍🍳 Cocina
+- Visualiza las órdenes por estado (`ordenado`, `cocinando`, `listo`)
+- Cambia el estado de los pedidos según el progreso
+- Visualiza recetas e ingredientes por pasos
+- Ve un resumen de qué productos necesita preparar
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 💼 Caja / Administrador
+- CRUD de productos con imágenes y categorías
+- Generación de informes de ventas y pedidos
+- Control de usuarios y sus roles
+- Visualiza y gestiona todas las órdenes
+- Cambia estados a “entregado”, “pagado”, “finalizado”, etc.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 📦 Estructura del Proyecto
 
-```bash
-npm run reset-project
-```
+Sistema-POS/
+├── app/                     # Rutas y pantallas del frontend móvil
+├── components/              # Componentes reutilizables (modals, botones, etc.)
+├── context/                 # Contextos globales (auth, productos, órdenes)
+├── server/                  # Backend con Express y lógica de API REST
+├── utils/                   # Configuración de Firebase, helpers, etc.
+├── assets/                  # Imágenes, iconos
+├── types/                   # Definiciones de tipos TypeScript
+├── package.json             # Dependencias frontend
+├── README.md
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## ⚙️ Instalación y ejecución
 
-To learn more about developing your project with Expo, look at the following resources:
+### 1. Clona el repositorio:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+\`\`\`bash
+https://github.com/Ritatrcr/Sistema-POS.git
+\`\`\`
 
-## Join the community
+### 2. Instala las dependencias:
 
-Join our community of developers creating universal apps.
+\`\`\`bash
+npm install
+\`\`\`
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 3. Configura Firebase:
+
+Crea un archivo `.env` en la raíz con tus credenciales de Firebase:
+
+\`\`\`
+FIREBASE_API_KEY=your_api_key
+FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+FIREBASE_APP_ID=your_app_id
+\`\`\`
+
+### 4. Ejecuta el proyecto móvil:
+
+\`\`\`bash
+npx expo start
+\`\`\`
+
+### 5. (Opcional) Ejecuta el servidor backend:
+
+\`\`\`bash
+cd server
+npm run dev
+\`\`\`
+
+---
+
+## 🧠 Aprendizajes y objetivos
+
+- Aplicación real multirol con arquitectura modular
+- Manejo de estados globales con Context API
+- Comunicación Firebase en tiempo real
+- Subida y visualización de imágenes con Storage
+- Buenas prácticas con TypeScript
+- Implementación de diseño adaptable y modular en Expo
+
+---
+
+## 🤝 Colaboradores
+
+- [Rita Trindade da Cruz](https://github.com/Ritatrcr) 
+- [Brandon Eduardo Merchan Sandoval](https://github.com/Merchito12) 
+
+---
+
+---
+
+### 💛 Un merge perfecto
+
+
+Este proyecto fue creado por dos manguitos.  
+**ManGusteau** es mucho más que una app, es la demostración de lo que somos cuando creamos juntos, del verdadero significado del trabajo en equipo.  
+Gracias por acompañarme en mis ideas locas y en momentos de estrés, en mis "se me olvidó pushearlo" y en mis "no me gustó, lo voy a borrar y volver a hacerlo desde cero". 
+Te amo, Manguito. 💛🥭
+
+ 
+
+---
